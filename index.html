@@ -137,7 +137,7 @@ nav a.on{
   position:relative;
   overflow:hidden;
   padding:110px 0 120px;
-  background:var(--off)
+  background:var(--off);
 }
 
 .hero::after{
@@ -148,7 +148,8 @@ nav a.on{
   bottom:0;
   width:38%;
   background:var(--ink);
-  clip-path:polygon(34% 0,100% 0,100% 100%,0 100%)
+  clip-path:polygon(34% 0,100% 0,100% 100%,0 100%);
+  z-index:0;
 }
 
 .hero::before{
@@ -160,34 +161,40 @@ nav a.on{
   width:6px;
   background:var(--orange);
   transform:skewX(-20deg);
-  z-index:0
+  z-index:0;
 }
 
 .hero .wrap{
   position:relative;
-  z-index:2
+  z-index:5;
 }
 
-h1{
+.hero h1{
+  position:relative;
+  z-index:10;
   font-size:clamp(40px,6.4vw,84px);
   line-height:1.02;
   font-weight:800;
   letter-spacing:-.03em;
   margin:0 0 28px;
-  max-width:11em
+  max-width:11em;
 }
 
 .hero p{
+  position:relative;
+  z-index:10;
   max-width:34em;
   font-size:19px;
   color:#3a3a3d;
-  margin:0 0 40px
+  margin:0 0 40px;
 }
 
 .hero .actions{
+  position:relative;
+  z-index:10;
   display:flex;
   gap:14px;
-  flex-wrap:wrap
+  flex-wrap:wrap;
 }
 
 /* SECTIONS */
