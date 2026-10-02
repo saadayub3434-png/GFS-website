@@ -1,350 +1,849 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>GFS — Global Financial Services</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+
 <style>
-:root{--ink:#1c1c1e;--orange:#f26a1b;--white:#fff;--off:#f6f5f3;--line:#e3e1dd;--grey:#6b6b6f;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
-*,*::before,*::after{box-sizing:inherit}
-body{margin:0;background:var(--white);color:var(--ink);font:400 17px/1.6 Manrope,Inter,"Segoe UI",Arial,sans-serif}
-a{color:inherit;text-decoration:none}
-:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-/* header */
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--white);border-bottom:1px solid var(--line)}
-header .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
-.logo{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.02em}
-.logo b{font-size:26px;letter-spacing:.04em}
-.logo i{width:3px;height:26px;background:var(--orange);transform:skewX(-20deg)}
-.logo small{font-weight:500;font-size:11px;line-height:1.25;color:var(--grey);max-width:70px}
-nav{display:flex;gap:28px;font-weight:600;font-size:15px}
-nav a{padding:6px 0;border-bottom:2px solid transparent}
-nav a:hover,nav a.on{color:var(--ink);border-color:var(--orange)}
-.btn{display:inline-block;font-weight:600;padding:14px 26px;border:2px solid var(--ink);transition:.2s}
-.btn.or{background:var(--orange);border-color:var(--orange);color:#fff}
-.btn.or:hover{background:var(--ink);border-color:var(--ink)}
-.btn.ol:hover{background:var(--ink);color:#fff}
-.hdr-cta{padding:10px 18px;font-size:14px}
-/* hero */
-.hero{position:relative;overflow:hidden;padding:110px 0 120px;background:var(--off)}
-.hero::after{content:"";position:absolute;right:0;top:0;bottom:0;width:38%;background:var(--ink);clip-path:polygon(34% 0,100% 0,100% 100%,0 100%)}
-.hero::before{content:"";position:absolute;right:35%;top:0;bottom:0;width:6px;background:var(--orange);transform:skewX(-20deg);transform-origin:top;z-index:1;right:calc(38% - 2px);clip-path:none;opacity:1}
-.hero .wrap{position:relative;z-index:2}
-h1{font-size:clamp(40px,6.4vw,84px);line-height:1.02;font-weight:800;letter-spacing:-.03em;margin:0 0 28px;max-width:11em}
-.hero p{max-width:34em;font-size:19px;color:#3a3a3d;margin:0 0 40px}
-.hero .actions{display:flex;gap:14px;flex-wrap:wrap}
-/* sections */
-section{padding:96px 0}
-.label{color:var(--orange);font-weight:600;font-size:15px;margin:0 0 14px;display:flex;align-items:center;gap:12px}
-.label::before{content:"";width:36px;height:2px;background:var(--orange)}
-h2{font-size:clamp(30px,4vw,48px);line-height:1.1;letter-spacing:-.02em;margin:0 0 20px;font-weight:800;max-width:16em}
-.intro{max-width:38em;color:var(--grey);margin:0 0 56px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
-.svc{padding:36px 32px 32px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;position:relative;transition:background .2s}
-.svc::before{content:"";position:absolute;left:0;top:0;height:3px;width:0;background:var(--orange);transition:width .3s}
-.svc:hover{background:var(--off)}.svc:hover::before{width:100%}
-.num{font-size:44px;font-weight:800;color:var(--orange);line-height:1;letter-spacing:-.03em;margin-bottom:28px}
-.svc h3{font-size:22px;margin:0 0 12px;font-weight:700}
-.svc p{margin:0 0 28px;color:var(--grey);font-size:16px;flex:1}
-.svc a{font-weight:600;font-size:15px;border-bottom:2px solid var(--orange);align-self:flex-start;padding-bottom:2px}
-/* dark band */
-.dark{background:var(--ink);color:#fff;position:relative;overflow:hidden}
-.dark::after{content:"";position:absolute;right:-80px;top:0;bottom:0;width:260px;border-left:2px solid var(--orange);transform:skewX(-20deg);opacity:.5}
-.dark .wrap{position:relative;z-index:1}
-.dark h2{max-width:14em;font-size:clamp(34px,5vw,64px)}
-.dark .intro{color:#bdbdc2}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;border-top:1px solid #3a3a3e;padding-top:40px;margin-top:48px}
-.stats b{display:block;font-size:48px;font-weight:800;color:var(--orange);line-height:1.1}
-.stats span{color:#bdbdc2;font-size:15px}
-/* industries */
-.ind{display:flex;flex-wrap:wrap;gap:12px}
-.ind a{border:1px solid var(--line);padding:12px 20px;font-weight:600;background:var(--off)}
-.ind a:hover{border-color:var(--orange);color:var(--orange)}
-/* contact */
-.cta{background:var(--off);text-align:left}
-.cta .wrap{display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
-/* footer */
-footer{background:var(--ink);color:#bdbdc2;padding:64px 0 32px;border-top:4px solid var(--orange)}
-footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
-footer .logo{color:#fff;margin-bottom:16px}footer .logo small{color:#bdbdc2}
-footer h4{color:#fff;margin:0 0 14px;font-size:15px}
-footer a{display:block;padding:4px 0;font-size:15px}footer a:hover{color:var(--orange)}
-footer p{margin:0;font-size:15px;max-width:26em}
-.copy{border-top:1px solid #3a3a3e;margin-top:48px;padding-top:24px;font-size:13px}
+:root{
+  --ink:#1c1c1e;
+  --orange:#f26a1b;
+  --white:#fff;
+  --off:#f6f5f3;
+  --line:#e3e1dd;
+  --grey:#6b6b6f;
+  box-sizing:border-box;
+  color-scheme:light
+}
+
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:80px
+}
+
+*,*::before,*::after{
+  box-sizing:inherit
+}
+
+body{
+  margin:0;
+  background:var(--white);
+  color:var(--ink);
+  font:400 17px/1.6 Manrope,Inter,"Segoe UI",Arial,sans-serif
+}
+
+a{
+  color:inherit;
+  text-decoration:none
+}
+
+:focus-visible{
+  outline:2px solid var(--orange);
+  outline-offset:3px
+}
+
+.wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 24px
+}
+
+/* HEADER */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:var(--white);
+  border-bottom:1px solid var(--line)
+}
+
+header .wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:72px
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:800
+}
+
+.logo-img{
+  height:44px;
+  width:auto;
+  max-width:200px;
+  object-fit:contain;
+  display:block
+}
+
+nav{
+  display:flex;
+  gap:28px;
+  font-weight:600;
+  font-size:15px
+}
+
+nav a{
+  padding:6px 0;
+  border-bottom:2px solid transparent
+}
+
+nav a:hover,
+nav a.on{
+  border-color:var(--orange)
+}
+
+.btn{
+  display:inline-block;
+  font-weight:600;
+  padding:14px 26px;
+  border:2px solid var(--ink);
+  transition:.2s
+}
+
+.btn.or{
+  background:var(--orange);
+  border-color:var(--orange);
+  color:#fff
+}
+
+.btn.or:hover{
+  background:var(--ink);
+  border-color:var(--ink)
+}
+
+.btn.ol:hover{
+  background:var(--ink);
+  color:#fff
+}
+
+.hdr-cta{
+  padding:10px 18px;
+  font-size:14px
+}
+
+/* HERO */
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:110px 0 120px;
+  background:var(--off)
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  right:0;
+  top:0;
+  bottom:0;
+  width:38%;
+  background:var(--ink);
+  clip-path:polygon(34% 0,100% 0,100% 100%,0 100%)
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  right:calc(38% - 2px);
+  top:0;
+  bottom:0;
+  width:6px;
+  background:var(--orange);
+  transform:skewX(-20deg);
+  z-index:1
+}
+
+.hero .wrap{
+  position:relative;
+  z-index:2
+}
+
+h1{
+  font-size:clamp(40px,6.4vw,84px);
+  line-height:1.02;
+  font-weight:800;
+  letter-spacing:-.03em;
+  margin:0 0 28px;
+  max-width:11em
+}
+
+.hero p{
+  max-width:34em;
+  font-size:19px;
+  color:#3a3a3d;
+  margin:0 0 40px
+}
+
+.hero .actions{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap
+}
+
+/* SECTIONS */
+
+section{
+  padding:96px 0
+}
+
+.label{
+  color:var(--orange);
+  font-weight:600;
+  font-size:15px;
+  margin:0 0 14px;
+  display:flex;
+  align-items:center;
+  gap:12px
+}
+
+.label::before{
+  content:"";
+  width:36px;
+  height:2px;
+  background:var(--orange)
+}
+
+h2{
+  font-size:clamp(30px,4vw,48px);
+  line-height:1.1;
+  letter-spacing:-.02em;
+  margin:0 0 20px;
+  font-weight:800;
+  max-width:16em
+}
+
+.intro{
+  max-width:38em;
+  color:var(--grey);
+  margin:0 0 56px
+}
+
+/* SERVICES */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--line);
+  border-left:1px solid var(--line)
+}
+
+.svc{
+  padding:36px 32px 32px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  transition:background .2s
+}
+
+.svc::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  height:3px;
+  width:0;
+  background:var(--orange);
+  transition:width .3s
+}
+
+.svc:hover{
+  background:var(--off)
+}
+
+.svc:hover::before{
+  width:100%
+}
+
+.num{
+  font-size:44px;
+  font-weight:800;
+  color:var(--orange);
+  line-height:1;
+  margin-bottom:28px
+}
+
+.svc h3{
+  font-size:22px;
+  margin:0 0 12px;
+  font-weight:700
+}
+
+.svc p{
+  margin:0 0 28px;
+  color:var(--grey);
+  font-size:16px;
+  flex:1
+}
+
+.svc a{
+  font-weight:600;
+  font-size:15px;
+  border-bottom:2px solid var(--orange);
+  align-self:flex-start;
+  padding-bottom:2px
+}
+
+/* DARK */
+
+.dark{
+  background:var(--ink);
+  color:#fff;
+  position:relative;
+  overflow:hidden
+}
+
+.dark::after{
+  content:"";
+  position:absolute;
+  right:-80px;
+  top:0;
+  bottom:0;
+  width:260px;
+  border-left:2px solid var(--orange);
+  transform:skewX(-20deg);
+  opacity:.5
+}
+
+.dark .wrap{
+  position:relative;
+  z-index:1
+}
+
+.dark h2{
+  max-width:14em;
+  font-size:clamp(34px,5vw,64px)
+}
+
+.dark .intro{
+  color:#bdbdc2
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:32px;
+  border-top:1px solid #3a3a3e;
+  padding-top:40px;
+  margin-top:48px
+}
+
+.stats b{
+  display:block;
+  font-size:48px;
+  font-weight:800;
+  color:var(--orange);
+  line-height:1.1
+}
+
+.stats span{
+  color:#bdbdc2;
+  font-size:15px
+}
+
+/* INDUSTRIES */
+
+.ind{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px
+}
+
+.ind a{
+  border:1px solid var(--line);
+  padding:12px 20px;
+  font-weight:600;
+  background:var(--off)
+}
+
+.ind a:hover{
+  border-color:var(--orange);
+  color:var(--orange)
+}
+
+/* INSIGHTS */
+
+.articles{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px
+}
+
+.article{
+  background:#fff;
+  border:1px solid var(--line);
+  border-top:3px solid var(--orange);
+  padding:28px;
+  display:flex;
+  flex-direction:column
+}
+
+.article .cat{
+  color:var(--orange);
+  font-weight:600;
+  font-size:14px;
+  margin-bottom:10px
+}
+
+.article h3{
+  font-size:20px;
+  line-height:1.3;
+  margin:0 0 12px
+}
+
+.article p{
+  color:var(--grey);
+  font-size:15px;
+  margin:0 0 18px;
+  flex:1
+}
+
+.article .meta{
+  font-size:13px;
+  color:var(--grey)
+}
+
+/* CONTACT */
+
+.cta{
+  background:var(--off);
+  text-align:left
+}
+
+.cta .wrap{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:32px;
+  flex-wrap:wrap
+}
+
+/* FOOTER */
+
+footer{
+  background:var(--ink);
+  color:#bdbdc2;
+  padding:64px 0 32px;
+  border-top:4px solid var(--orange)
+}
+
+footer .cols{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px
+}
+
+footer .logo{
+  color:#fff;
+  margin-bottom:16px
+}
+
+footer .footer-logo{
+  height:34px;
+  width:auto;
+  max-width:150px;
+  object-fit:contain;
+  margin-bottom:16px
+}
+
+footer h4{
+  color:#fff;
+  margin:0 0 14px;
+  font-size:15px
+}
+
+footer a{
+  display:block;
+  padding:4px 0;
+  font-size:15px
+}
+
+footer a:hover{
+  color:var(--orange)
+}
+
+footer p{
+  margin:0;
+  font-size:15px;
+  max-width:26em
+}
+
+.copy{
+  border-top:1px solid #3a3a3e;
+  margin-top:48px;
+  padding-top:24px;
+  font-size:13px
+}
+
+/* MOBILE */
+
 @media(max-width:900px){
-nav{display:none}.hdr-cta{display:none}
-.grid,.stats{grid-template-columns:1fr 1fr}
-footer .cols{grid-template-columns:1fr 1fr}
-.hero::after{width:22%}.hero::before{right:calc(22% - 2px)}}
+
+  nav{
+    display:none
+  }
+
+  .hdr-cta{
+    display:none
+  }
+
+  .grid,
+  .stats,
+  .articles{
+    grid-template-columns:1fr 1fr
+  }
+
+  footer .cols{
+    grid-template-columns:1fr 1fr
+  }
+
+  .hero::after{
+    width:22%
+  }
+
+  .hero::before{
+    right:calc(22% - 2px)
+  }
+}
+
 @media(max-width:600px){
-.grid,.stats,footer .cols{grid-template-columns:1fr}
-.hero{padding:64px 0 72px}section{padding:64px 0}
-.hero::after,.hero::before{display:none}
-.logo small{display:none}}
-.logo-img{display:none;height:44px;width:auto;max-width:200px;object-fit:contain}
-.has-logo .logo-img{display:block}
-.has-logo .logo b,.has-logo .logo i,.has-logo .logo small{display:none}
-.tools{display:flex;align-items:center;gap:12px}
-.up{font-size:13px;font-weight:600;color:var(--grey);border:1px dashed #b9b7b2;padding:8px 12px;cursor:pointer;background:none;font-family:inherit}
-.up:hover,.up:focus-within{border-color:var(--orange);color:var(--orange)}
-.up input{position:absolute;opacity:0;width:1px;height:1px}
-.rm{display:none}.has-logo .rm{display:inline-block}
-footer .flogo-img{display:none;height:34px;width:auto;max-width:150px;object-fit:contain;background:#fff;padding:6px 10px;margin-bottom:16px}
-.has-logo footer .flogo-img{display:block}
-.has-logo footer .logo{display:none}
-.artbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:32px}
-.chip{font:600 14px Manrope,sans-serif;padding:9px 16px;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
-.chip:hover,.chip.on{border-color:var(--orange);color:var(--orange)}
-.agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.acard{background:#fff;border:1px solid var(--line);border-top:3px solid var(--orange);padding:28px;display:flex;flex-direction:column}
-.acat{color:var(--orange);font-weight:600;font-size:14px;margin-bottom:10px}
-.acard h3{font-size:20px;line-height:1.3;margin:0 0 12px}
-.acard p{color:var(--grey);font-size:15px;margin:0 0 18px;flex:1}
-.ameta{font-size:13px;color:var(--grey);margin-bottom:16px}
-.alink{font:600 15px Manrope,sans-serif;background:none;border:0;border-bottom:2px solid var(--orange);align-self:flex-start;padding:0 0 2px;cursor:pointer;color:var(--ink)}
-.modal{position:fixed;inset:0;background:#fff;z-index:20;overflow:auto;padding:calc(48px + env(safe-area-inset-top,0px)) 24px 64px}
-.modal[hidden]{display:none}
-.modal .in{max-width:720px;margin:0 auto}
-.modal h1{font-size:clamp(30px,5vw,46px);margin:8px 0 16px}
-.modal .body p{font-size:18px;line-height:1.75;margin:0 0 20px}
-.admin{background:#fff;border:1px solid var(--line);border-left:4px solid var(--orange);padding:24px;margin-bottom:32px}
-.admin label{display:block;font-weight:600;font-size:14px;margin:0 0 14px}
-.admin input,.admin textarea{display:block;width:100%;margin-top:6px;padding:10px 12px;font:400 15px Manrope,sans-serif;border:1px solid #bdbbb6;background:#fff;color:var(--ink)}
-.admin .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.admin .acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.admin .btn{padding:10px 18px;font:600 14px Manrope,sans-serif;cursor:pointer}
-.admin ul{list-style:none;margin:20px 0 0;padding:0}
-.admin li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
-.admin li button{font:600 13px Manrope,sans-serif;background:none;border:0;color:var(--orange);cursor:pointer;margin-left:10px}
-.stat{font-size:14px;color:var(--grey)}
-@media(max-width:900px){.agrid{grid-template-columns:1fr 1fr}.admin .row{grid-template-columns:1fr}}
-@media(max-width:600px){.agrid{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+  .grid,
+  .stats,
+  .articles,
+  footer .cols{
+    grid-template-columns:1fr
+  }
+
+  .hero{
+    padding:64px 0 72px
+  }
+
+  section{
+    padding:64px 0
+  }
+
+  .hero::after,
+  .hero::before{
+    display:none
+  }
+
+  .logo-img{
+    max-width:160px
+  }
+}
 </style>
 </head>
+
 <body>
+
 <header>
 <div class="wrap">
-<a class="logo" href="#top" aria-label="GFS — Global Financial Services"><img class="logo-img" alt="GFS — Global Financial Services"><b>GFS</b><i></i><small>Global Financial Services</small></a>
+
+<a class="logo" href="#top" aria-label="GFS — Global Financial Services">
+<img class="logo-img" src="logo.png" alt="GFS — Global Financial Services">
+</a>
+
 <nav aria-label="Primary">
-<a class="on" href="#top">Home</a><a href="#about">About</a><a href="#services">Services</a><a href="#industries">Industries</a><a href="#insights">Insights</a><a href="#careers">Careers</a><a href="#contact">Contact</a>
+<a class="on" href="#top">Home</a>
+<a href="#about">About</a>
+<a href="#services">Services</a>
+<a href="#industries">Industries</a>
+<a href="#insights">Insights</a>
+<a href="#careers">Careers</a>
+<a href="#contact">Contact</a>
 </nav>
-<div class="tools">
-<label class="up">Upload logo<input type="file" id="logoFile" accept="image/png,image/jpeg,image/svg+xml,image/webp"></label>
-<label class="up rm"><input type="checkbox" id="logoBg" checked style="position:static;opacity:1;width:auto;display:inline;margin:0 6px 0 0">No white bg</label>
-<button class="up rm" id="logoRm" type="button">Remove</button>
+
 <a class="btn or hdr-cta" href="#contact">Talk to Our Team</a>
-</div>
+
 </div>
 </header>
 
 <main id="top">
+
+<!-- HERO -->
+
 <div class="hero">
 <div class="wrap">
+
 <h1>Building Confidence. Creating Value.</h1>
-<p>Global Financial Services provides Audit &amp; Assurance, Tax, Risk and Advisory solutions that help organizations strengthen performance, manage risk and create sustainable value.</p>
+
+<p>
+Global Financial Services provides Audit &amp; Assurance, Tax, Risk and Advisory solutions that help organizations strengthen performance, manage risk and create sustainable value.
+</p>
+
 <div class="actions">
 <a class="btn or" href="#services">Explore Our Services</a>
 <a class="btn ol" href="#contact">Talk to Our Team</a>
 </div>
+
 </div>
 </div>
+
+<!-- SERVICES -->
 
 <section id="services">
 <div class="wrap">
+
 <p class="label">What we do</p>
+
 <h2>Six disciplines. One standard of quality.</h2>
-<p class="intro">Our teams work across the financial lifecycle, from independent assurance to regulatory readiness, so leaders can decide with clarity.</p>
+
+<p class="intro">
+Our teams work across the financial lifecycle, from independent assurance to regulatory readiness, so leaders can decide with clarity.
+</p>
+
 <div class="grid">
-<article class="svc"><div class="num">01</div><h3>Audit &amp; Assurance</h3><p>Independent assurance that strengthens confidence in financial information, reporting and controls.</p><a href="#contact">Explore Service →</a></article>
-<article class="svc"><div class="num">02</div><h3>Tax</h3><p>Practical tax planning and compliance that supports growth across jurisdictions.</p><a href="#contact">Explore Service →</a></article>
-<article class="svc"><div class="num">03</div><h3>Risk &amp; Internal Audit</h3><p>Risk frameworks and internal audit programs that protect value and sharpen oversight.</p><a href="#contact">Explore Service →</a></article>
-<article class="svc"><div class="num">04</div><h3>Advisory</h3><p>Strategic and financial advice that helps organizations improve performance and execute change.</p><a href="#contact">Explore Service →</a></article>
-<article class="svc"><div class="num">05</div><h3>Regulatory &amp; Compliance</h3><p>Support to meet regulatory obligations, with clear processes and defensible documentation.</p><a href="#contact">Explore Service →</a></article>
-<article class="svc"><div class="num">06</div><h3>VAT &amp; E-Invoicing</h3><p>VAT advisory and e-invoicing implementation that keeps reporting accurate and compliant.</p><a href="#contact">Explore Service →</a></article>
+
+<article class="svc">
+<div class="num">01</div>
+<h3>Audit &amp; Assurance</h3>
+<p>Independent assurance that strengthens confidence in financial information, reporting and controls.</p>
+<a href="#contact">Explore Service →</a>
+</article>
+
+<article class="svc">
+<div class="num">02</div>
+<h3>Tax</h3>
+<p>Practical tax planning and compliance that supports growth across jurisdictions.</p>
+<a href="#contact">Explore Service →</a>
+</article>
+
+<article class="svc">
+<div class="num">03</div>
+<h3>Risk &amp; Internal Audit</h3>
+<p>Risk frameworks and internal audit programs that protect value and sharpen oversight.</p>
+<a href="#contact">Explore Service →</a>
+</article>
+
+<article class="svc">
+<div class="num">04</div>
+<h3>Advisory</h3>
+<p>Strategic and financial advice that helps organizations improve performance and execute change.</p>
+<a href="#contact">Explore Service →</a>
+</article>
+
+<article class="svc">
+<div class="num">05</div>
+<h3>Regulatory &amp; Compliance</h3>
+<p>Support to meet regulatory obligations, with clear processes and defensible documentation.</p>
+<a href="#contact">Explore Service →</a>
+</article>
+
+<article class="svc">
+<div class="num">06</div>
+<h3>VAT &amp; E-Invoicing</h3>
+<p>VAT advisory and e-invoicing implementation that keeps reporting accurate and compliant.</p>
+<a href="#contact">Explore Service →</a>
+</article>
+
 </div>
 </div>
 </section>
+
+<!-- ABOUT -->
 
 <section id="about" class="dark">
 <div class="wrap">
+
 <p class="label">About GFS</p>
+
 <h2>Trusted judgment for complex financial decisions.</h2>
-<p class="intro">GFS brings international standards and local insight together. We combine technical depth with a direct, structured approach, so every engagement delivers clear and defensible outcomes.</p>
+
+<p class="intro">
+GFS brings international standards and local insight together. We combine technical depth with a direct, structured approach, so every engagement delivers clear and defensible outcomes.
+</p>
+
 <div class="stats">
-<div><b>6</b><span>Integrated service lines</span></div>
-<div><b>1</b><span>Consistent global standard</span></div>
-<div><b>100%</b><span>Independent, objective advice</span></div>
+
+<div>
+<b>6</b>
+<span>Integrated service lines</span>
 </div>
+
+<div>
+<b>1</b>
+<span>Consistent global standard</span>
+</div>
+
+<div>
+<b>100%</b>
+<span>Independent, objective advice</span>
+</div>
+
+</div>
+
 </div>
 </section>
+
+<!-- INDUSTRIES -->
 
 <section id="industries">
 <div class="wrap">
+
 <p class="label">Industries</p>
+
 <h2>Experience across the sectors that move economies.</h2>
-<p class="intro">Our professionals understand the regulation, risk and reporting demands specific to your sector.</p>
+
+<p class="intro">
+Our professionals understand the regulation, risk and reporting demands specific to your sector.
+</p>
+
 <div class="ind">
-<a href="#contact">Banking &amp; Financial Services</a><a href="#contact">Energy &amp; Utilities</a><a href="#contact">Real Estate &amp; Construction</a><a href="#contact">Government &amp; Public Sector</a><a href="#contact">Retail &amp; Consumer</a><a href="#contact">Healthcare</a><a href="#contact">Technology</a>
+
+<a href="#contact">Banking &amp; Financial Services</a>
+<a href="#contact">Energy &amp; Utilities</a>
+<a href="#contact">Real Estate &amp; Construction</a>
+<a href="#contact">Government &amp; Public Sector</a>
+<a href="#contact">Retail &amp; Consumer</a>
+<a href="#contact">Healthcare</a>
+<a href="#contact">Technology</a>
+
 </div>
 </div>
 </section>
+
+<!-- INSIGHTS -->
 
 <section id="insights" style="background:var(--off)">
 <div class="wrap">
+
 <p class="label">Insights</p>
+
 <h2>Perspectives on what is changing.</h2>
-<p class="intro">Analysis from our teams on tax, regulation, risk and reporting, published for the public.</p>
-<div class="artbar"><div id="artFilters" class="ind"></div><button class="btn ol" id="manageBtn" type="button" hidden>Manage articles</button></div>
-<div id="adminPanel" hidden></div>
-<div id="artList" class="agrid"></div>
+
+<p class="intro">
+Analysis from our teams on tax, regulation, risk and reporting, published for the public.
+</p>
+
+<div class="articles">
+
+<article class="article">
+<div class="cat">VAT &amp; E-Invoicing</div>
+<h3>E-invoicing readiness: a practical checklist for finance teams</h3>
+<p>Six questions to answer before your organization moves to structured electronic invoices.</p>
+<div class="meta">GFS VAT Team · 18 Sep 2026</div>
+</article>
+
+<article class="article">
+<div class="cat">Risk &amp; Internal Audit</div>
+<h3>What a risk-based internal audit plan looks like in practice</h3>
+<p>How to focus internal audit effort on the risks that matter most to your strategy.</p>
+<div class="meta">GFS Risk Team · 5 Sep 2026</div>
+</article>
+
+<article class="article">
+<div class="cat">Audit &amp; Assurance</div>
+<h3>Five questions audit committees should ask about financial reporting</h3>
+<p>Questions that help committees test the quality of reporting and the strength of controls.</p>
+<div class="meta">GFS Assurance Team · 22 Aug 2026</div>
+</article>
+
+</div>
+
 </div>
 </section>
-<div id="artView" class="modal" hidden></div>
-<script type="application/json" id="articles-data">[
-{"id":"a1","title":"E-invoicing readiness: a practical checklist for finance teams","cat":"VAT & E-Invoicing","author":"GFS VAT Team","date":"2026-09-18","summary":"Six questions to answer before your organization moves to structured electronic invoices.","body":"Moving to e-invoicing is a systems change as much as a compliance change. Finance, IT and tax teams need a shared view of what will change.\n\nStart by mapping where invoices are created, approved and archived today. Gaps in master data, such as tax numbers and customer details, are the most common cause of rejected invoices.\n\nNext, confirm how your ERP will produce the required format, and test with a small group of customers and suppliers before full rollout.\n\nSample article. Replace with your own content."},
-{"id":"a2","title":"What a risk-based internal audit plan looks like in practice","cat":"Risk & Internal Audit","author":"GFS Risk Team","date":"2026-09-05","summary":"How to focus internal audit effort on the risks that matter most to your strategy.","body":"A risk-based plan begins with the organization's objectives, not with last year's audit list.\n\nRank risks by impact and likelihood, link each to the controls that mitigate it, and decide where independent assurance adds the most value.\n\nRevisit the plan during the year. New regulation, acquisitions and system changes can shift priorities quickly.\n\nSample article. Replace with your own content."},
-{"id":"a3","title":"Five questions audit committees should ask about financial reporting","cat":"Audit & Assurance","author":"GFS Assurance Team","date":"2026-08-22","summary":"Questions that help committees test the quality of reporting and the strength of controls.","body":"Strong oversight starts with good questions. Ask how significant estimates are made and who challenges them.\n\nAsk which controls changed during the year, and how management knows they still work.\n\nFinally, ask what the auditors found difficult. Their answer often points to the areas that deserve more attention.\n\nSample article. Replace with your own content."}
-]</script>
+
+<!-- CAREERS -->
+
 <section id="careers">
 <div class="wrap">
+
 <p class="label">Careers</p>
+
 <h2>Build a career on rigor and curiosity.</h2>
-<p class="intro">We invest in people who ask better questions. Join a team that values technical excellence and growth.</p>
+
+<p class="intro">
+We invest in people who ask better questions. Join a team that values technical excellence and growth.
+</p>
+
 <a class="btn ol" href="#contact">View Open Roles</a>
+
 </div>
 </section>
+
+<!-- CONTACT -->
 
 <section id="contact" class="cta">
 <div class="wrap">
-<div><p class="label">Contact</p><h2 style="margin:0">Let’s discuss what you need.</h2></div>
-<a class="btn or" href="mailto:info@example.com">Talk to Our Team</a>
+
+<div>
+<p class="label">Contact</p>
+<h2 style="margin:0">Let’s discuss what you need.</h2>
+</div>
+
+<a class="btn or" href="mailto:info@example.com">
+Talk to Our Team
+</a>
+
 </div>
 </section>
+
 </main>
 
+<!-- FOOTER -->
+
 <footer>
+
 <div class="wrap">
+
 <div class="cols">
-<div><img class="flogo-img" alt="GFS logo"><div class="logo"><b>GFS</b><i></i><small>Global Financial Services</small></div><p>Audit &amp; Assurance, Tax, Risk and Advisory solutions for organizations that value confidence and sustainable value.</p></div>
-<div><h4>Services</h4><a href="#services">Audit &amp; Assurance</a><a href="#services">Tax</a><a href="#services">Risk &amp; Internal Audit</a><a href="#services">Advisory</a></div>
-<div><h4>More</h4><a href="#services">Regulatory &amp; Compliance</a><a href="#services">VAT &amp; E-Invoicing</a><a href="#industries">Industries</a><a href="#insights">Insights</a></div>
-<div><h4>Firm</h4><a href="#about">About</a><a href="#careers">Careers</a><a href="#contact">Contact</a></div>
+
+<div>
+
+<img class="footer-logo" src="logo.png" alt="GFS — Global Financial Services">
+
+<p>
+Audit &amp; Assurance, Tax, Risk and Advisory solutions for organizations that value confidence and sustainable value.
+</p>
+
 </div>
-<div class="copy">© 2026 Global Financial Services. All rights reserved.</div>
+
+<div>
+<h4>Services</h4>
+<a href="#services">Audit &amp; Assurance</a>
+<a href="#services">Tax</a>
+<a href="#services">Risk &amp; Internal Audit</a>
+<a href="#services">Advisory</a>
 </div>
+
+<div>
+<h4>More</h4>
+<a href="#services">Regulatory &amp; Compliance</a>
+<a href="#services">VAT &amp; E-Invoicing</a>
+<a href="#industries">Industries</a>
+<a href="#insights">Insights</a>
+</div>
+
+<div>
+<h4>Firm</h4>
+<a href="#about">About</a>
+<a href="#careers">Careers</a>
+<a href="#contact">Contact</a>
+</div>
+
+</div>
+
+<div class="copy">
+© 2026 Global Financial Services. All rights reserved.
+</div>
+
+</div>
+
 </footer>
-<script>
-(function(){
-var K="gfs-logo",root=document.documentElement,
-imgs=document.querySelectorAll(".logo-img,.flogo-img");
-function apply(src){
- if(src){imgs.forEach(function(i){i.src=src});root.classList.add("has-logo")}
- else{imgs.forEach(function(i){i.removeAttribute("src")});root.classList.remove("has-logo")}
-}
-try{var s=localStorage.getItem(K);if(s)apply(s)}catch(e){}
-var orig=null,isSvg=false,cb=document.getElementById("logoBg");
-function cut(src,done){var im=new Image();im.onload=function(){var c=document.createElement("canvas");c.width=im.naturalWidth;c.height=im.naturalHeight;var x=c.getContext("2d");x.drawImage(im,0,0);var d=x.getImageData(0,0,c.width,c.height),q=d.data;for(var i=0;i<q.length;i+=4){var m=Math.min(q[i],q[i+1],q[i+2]);if(m>=240)q[i+3]=0;else if(m>205)q[i+3]=Math.round(q[i+3]*(240-m)/35)}x.putImageData(d,0,0);done(c.toDataURL("image/png"))};im.src=src}
-function show(){if(!orig)return;var go=function(u){apply(u);try{localStorage.setItem(K,u)}catch(x){}};if(cb.checked&&!isSvg)cut(orig,go);else go(orig)}
-cb.addEventListener("change",show);
-document.getElementById("logoFile").addEventListener("change",function(e){
- var f=e.target.files[0];if(!f)return;
- if(f.size>2*1024*1024){alert("Please choose an image under 2 MB.");return}
- var r=new FileReader();isSvg=f.type==="image/svg+xml";
- r.onload=function(){orig=r.result;show()};
- r.readAsDataURL(f);
-});
-document.getElementById("logoRm").addEventListener("click",function(){
- apply(null);try{localStorage.removeItem(K)}catch(e){}
- document.getElementById("logoFile").value="";
-});
-})();
-</script>
-<script>
-(function(){
-var $=function(i){return document.getElementById(i)};
-function h(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n}
-var data=[];try{data=JSON.parse($("articles-data").textContent)}catch(e){}
-var cat="All",art=null,editing=null,dirty=false;
-function fmt(d){try{return new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}catch(e){return d}}
-function render(){
- var f=$("artFilters");f.textContent="";
- var cats=["All"];data.forEach(function(a){if(cats.indexOf(a.cat)<0)cats.push(a.cat)});
- if(cats.indexOf(cat)<0)cat="All";
- cats.forEach(function(c){var b=h("button","chip"+(c===cat?" on":""),c);b.type="button";b.onclick=function(){cat=c;render()};f.appendChild(b)});
- var l=$("artList");l.textContent="";
- var s=data.slice().sort(function(a,b){return a.date<b.date?1:-1}).filter(function(a){return cat==="All"||a.cat===cat});
- if(!s.length)l.appendChild(h("p","intro","No articles published yet."));
- s.forEach(function(a){var c=h("article","acard");c.appendChild(h("div","acat",a.cat));c.appendChild(h("h3",null,a.title));c.appendChild(h("p",null,a.summary));c.appendChild(h("div","ameta",a.author+", "+fmt(a.date)));var b=h("button","alink","Read article →");b.type="button";b.onclick=function(){openArt(a)};c.appendChild(b);l.appendChild(c)});
-}
-function openArt(a){
- var m=$("artView");m.textContent="";var i=h("div","in");
- var x=h("button","btn ol","Close");x.type="button";x.onclick=closeArt;i.appendChild(x);
- i.appendChild(h("div","acat",a.cat));i.appendChild(h("h1",null,a.title));i.appendChild(h("div","ameta",a.author+", "+fmt(a.date)));
- var b=h("div","body");a.body.split(/\n\s*\n/).forEach(function(p){if(p.trim())b.appendChild(h("p",null,p.trim()))});i.appendChild(b);
- m.appendChild(i);m.hidden=false;m.scrollTop=0;
-}
-function closeArt(){$("artView").hidden=true}
-document.addEventListener("keydown",function(e){if(e.key==="Escape")closeArt()});
-render();
-/* admin: only for people who can publish this page */
-var artifact=null;
-function field(lbl,tag,id,val){var l=h("label",null,lbl);var i=document.createElement(tag);i.id=id;if(tag==="input")i.type=id==="fDate"?"date":"text";if(tag==="textarea")i.rows=10;i.value=val||"";l.appendChild(i);return l}
-function panel(){
- var p=$("adminPanel");p.textContent="";var w=h("div","admin");
- var e=editing||{title:"",cat:"",author:"",date:new Date().toISOString().slice(0,10),summary:"",body:""};
- w.appendChild(h("h3",null,editing?"Edit article":"New article"));
- w.appendChild(field("Title","input","fTitle",e.title));
- var r=h("div","row");r.appendChild(field("Category","input","fCat",e.cat));r.appendChild(field("Author","input","fAuthor",e.author));r.appendChild(field("Date","input","fDate",e.date));w.appendChild(r);
- w.appendChild(field("Summary (one or two sentences)","input","fSum",e.summary));
- w.appendChild(field("Article text (separate paragraphs with a blank line)","textarea","fBody",e.body));
- var a=h("div","acts");
- var sv=h("button","btn or","Save article");sv.type="button";sv.onclick=save;a.appendChild(sv);
- if(editing){var c=h("button","btn ol","Cancel edit");c.type="button";c.onclick=function(){editing=null;panel()};a.appendChild(c)}
- var pb=h("button","btn ol","Publish changes");pb.type="button";pb.onclick=publish;a.appendChild(pb);
- var st=h("span","stat",dirty?"Unpublished changes. Publish to make them public.":"No unpublished changes.");st.id="stat";a.appendChild(st);
- w.appendChild(a);
- var ul=h("ul");data.forEach(function(d){var li=h("li");li.appendChild(h("span",null,d.title));var g=h("span");
-  var ed=h("button",null,"Edit");ed.type="button";ed.onclick=function(){editing=d;panel();p.scrollIntoView()};
-  var dl=h("button",null,"Delete");dl.type="button";dl.onclick=function(){if(confirm("Delete this article?")){data=data.filter(function(z){return z!==d});editing=null;dirty=true;render();panel()}};
-  g.appendChild(ed);g.appendChild(dl);li.appendChild(g);ul.appendChild(li)});
- w.appendChild(ul);p.appendChild(w);
-}
-function save(){
- var t=$("fTitle").value.trim(),b=$("fBody").value.trim();
- if(!t||!b){$("stat").textContent="Title and article text are required.";return}
- var o={id:editing?editing.id:Date.now().toString(36),title:t,cat:$("fCat").value.trim()||"General",author:$("fAuthor").value.trim()||"GFS",date:$("fDate").value,summary:$("fSum").value.trim(),body:b};
- if(editing){data[data.indexOf(editing)]=o}else{data.push(o)}
- editing=null;dirty=true;render();panel();
-}
-async function publish(){
- var st=$("stat");
- try{
-  var c=document.documentElement.cloneNode(true);
-  c.querySelector("#articles-data").textContent=JSON.stringify(data).replace(/</g,"\\u003c");
-  ["artList","artFilters","adminPanel","artView"].forEach(function(i){c.querySelector("#"+i).textContent=""});
-  ["adminPanel","artView","manageBtn"].forEach(function(i){c.querySelector("#"+i).setAttribute("hidden","")});
-  c.classList.remove("has-logo");c.querySelectorAll(".logo-img,.flogo-img").forEach(function(i){i.removeAttribute("src")});
-  st.textContent="Publishing...";
-  await artifact.publish("<!DOCTYPE html>\n"+c.outerHTML);
-  dirty=false;
- }catch(err){st.textContent="Could not publish: "+((err&&err.code)||"try again")}
-}
-$("manageBtn").onclick=function(){var p=$("adminPanel");p.hidden=!p.hidden;if(!p.hidden)panel()};
-(async function(){
- try{
-  if(!window.claude||!claude.use)return;
-  artifact=await claude.use("artifact");var u=await claude.use("user");
-  if(artifact&&u&&u.canEdit())$("manageBtn").hidden=false;
- }catch(e){}
-})();
-})();
-</script>
+
 </body>
 </html>
+```
