@@ -775,19 +775,169 @@ We invest in people who ask better questions. Join a team that values technical 
 
 <!-- CONTACT -->
 
-<section id="contact" class="cta">
-<div class="wrap">
+<section id="contact">
+  <div class="container">
 
-<div>
-<p class="label">Contact</p>
-<h2 style="margin:0">Let’s discuss what you need.</h2>
+```
+<div class="section-heading">
+  <span class="eyebrow">CONTACT</span>
+  <h2>Let's discuss your requirements.</h2>
+  <p>
+    Whether you need audit, accounting, advisory, regulatory or financial
+    support, our team is available to discuss your requirements.
+  </p>
 </div>
 
-<a class="btn or" href="mailto:info@example.com">
-Talk to Our Team
-</a>
+<div class="contact-grid">
+
+  <!-- Contact Details -->
+  <div class="contact-details">
+
+    <div class="contact-card">
+      <div class="contact-icon">✉</div>
+      <div>
+        <span>Email</span>
+        <a href="mailto:info@gfsme.com">info@gfsme.com</a>
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-icon">☎</div>
+      <div>
+        <span>Phone</span>
+        <a href="tel:+96876635785">+968 7663 5785</a>
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-icon">⌖</div>
+      <div>
+        <span>Office</span>
+        <p>Muscat, Sultanate of Oman</p>
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-icon">◉</div>
+      <div>
+        <span>Business Hours</span>
+        <p>Sunday – Thursday<br>9:00 AM – 5:00 PM</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Enquiry Form -->
+  <div class="contact-form-wrapper">
+
+    <h3>Send Us an Enquiry</h3>
+    <p class="form-intro">
+      Please complete the form below and our team will get back to you.
+    </p>
+
+    <form
+      action="https://formspree.io/f/YOUR_FORM_ID"
+      method="POST"
+      class="contact-form"
+    >
+
+      <div class="form-row">
+
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Your full name"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="company">Company</label>
+          <input
+            type="text"
+            id="company"
+            name="company"
+            placeholder="Company name"
+          >
+        </div>
+
+      </div>
+
+      <div class="form-row">
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="your@email.com"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            placeholder="+968"
+          >
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label for="service">Service Required</label>
+        <select id="service" name="service">
+          <option value="">Select a service</option>
+          <option value="Audit & Assurance">Audit & Assurance</option>
+          <option value="Accounting & Finance">Accounting & Finance</option>
+          <option value="Tax & Compliance">Tax & Compliance</option>
+          <option value="Regulatory Advisory">Regulatory Advisory</option>
+          <option value="Financial Advisory">Financial Advisory</option>
+          <option value="Internal Audit">Internal Audit</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Your Enquiry *</label>
+        <textarea
+          id="message"
+          name="message"
+          rows="6"
+          placeholder="Please tell us how we can assist you..."
+          required
+        ></textarea>
+      </div>
+
+      <input
+        type="hidden"
+        name="_subject"
+        value="New Enquiry — GFS Global Financial Services"
+      >
+
+      <button type="submit" class="form-submit">
+        Send Enquiry
+      </button>
+
+      <p class="form-note">
+        Your information will be used only to respond to your enquiry.
+      </p>
+
+    </form>
+
+  </div>
 
 </div>
+```
+
+  </div>
 </section>
 
 </main>
