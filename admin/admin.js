@@ -1,80 +1,145 @@
 // ============================================================
-// GFS Admin Portal — Supabase Login
+// GFS Admin Portal
+// Login + Dashboard
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", function () {
 
-    const loginForm = document.getElementById("loginForm");
-    const loginMessage = document.getElementById("loginMessage");
-    const loginButton = document.getElementById("loginButton");
+document.addEventListener("DOMContentLoaded", async function () {
 
-    if (!loginForm) {
-        console.error("GFS Admin: Login form not found.");
-        return;
+    const currentPage =
+        window.location.pathname.split("/").pop();
+
+
+    // ========================================================
+    // LOGIN PAGE
+    // ========================================================
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    if (loginForm) {
+
+        const loginMessage =
+            document.getElementById("loginMessage");
+
+        const loginButton =
+            document.getElementById("loginButton");
+
+
+        loginForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                const email =
+                    document.getElementById("email").value.trim();
+
+                const password =
+                    document.getElementById("password").value;
+
+
+                loginMessage.textContent =
+                    "Signing in...";
+
+                loginButton.disabled = true;
+
+
+                try {
+
+                    const { data, error } =
+                        await window.supabaseClient.auth
+                        .signInWithPassword({
+                            email: email,
+                            password: password
+                        });
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    if (!data.session) {
+                        throw new Error(
+                            "Login failed. No session was created."
+                        );
+                    }
+
+
+                    loginMessage.textContent =
+                        "Login successful.";
+
+
+                    window.location.href =
+                        "dashboard.html";
+
+
+                } catch (error) {
+
+                    console.error(
+                        "GFS Login Error:",
+                        error
+                    );
+
+
+                    loginMessage.textContent =
+                        error.message ||
+                        "Unable to sign in.";
+
+
+                    loginButton.disabled = false;
+
+                    loginButton.textContent =
+                        "Sign In";
+                }
+
+            }
+        );
     }
 
-    loginForm.addEventListener("submit", async function (event) {
 
-        event.preventDefault();
+    // ========================================================
+    // DASHBOARD
+    // ========================================================
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
+    const logoutButton =
+        document.getElementById("logoutButton");
 
-        if (!email || !password) {
-            loginMessage.textContent = "Please enter your email and password.";
+
+    if (logoutButton) {
+
+        const {
+            data: {
+                session
+            }
+        } = await window.supabaseClient.auth
+            .getSession();
+
+
+        // If not logged in, return to login
+        if (!session) {
+
+            window.location.href =
+                "index.html";
+
             return;
         }
 
-        loginMessage.textContent = "Signing in...";
-        loginButton.disabled = true;
 
-        try {
+        // Logout
+        logoutButton.addEventListener(
+            "click",
+            async function () {
 
-            if (!window.supabase) {
-                throw new Error(
-                    "Supabase library was not loaded. Please refresh the page."
-                );
+                await window.supabaseClient.auth.signOut();
+
+                window.location.href =
+                    "index.html";
+
             }
+        );
 
-            if (!window.supabaseClient) {
-                throw new Error(
-                    "Supabase client was not initialized. Please check supabase.js."
-                );
-            }
-
-            const { data, error } =
-                await window.supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-            if (error) {
-                throw error;
-            }
-
-            if (!data || !data.session) {
-                throw new Error(
-                    "Login was not completed. No session was returned."
-                );
-            }
-
-            console.log("GFS Admin login successful.");
-
-            loginMessage.textContent = "Login successful.";
-
-            window.location.href = "dashboard.html";
-
-        } catch (error) {
-
-            console.error("GFS Admin Login Error:", error);
-
-            loginMessage.textContent =
-                error.message || "Unable to sign in.";
-
-            loginButton.disabled = false;
-            loginButton.textContent = "Sign In";
-        }
-
-    });
+    }
 
 });
