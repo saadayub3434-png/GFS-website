@@ -36,98 +36,144 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             event.preventDefault();
 
-            const emailInput = document.getElementById("email");
-            const passwordInput = document.getElementById("password");
-            const loginButton = document.getElementById("loginButton");
-            const loginMessage = document.getElementById("loginMessage");
+            const emailInput =
+                document.getElementById("email");
 
-            const email = emailInput ? emailInput.value.trim() : "";
-            const password = passwordInput ? passwordInput.value : "";
+            const passwordInput =
+                document.getElementById("password");
+
+            const loginButton =
+                document.getElementById("loginButton");
+
+            const loginMessage =
+                document.getElementById("loginMessage");
+
+            const email =
+                emailInput ? emailInput.value.trim() : "";
+
+            const password =
+                passwordInput ? passwordInput.value : "";
+
 
             if (!email || !password) {
+
                 if (loginMessage) {
                     loginMessage.textContent =
                         "Please enter your email and password.";
+                    loginMessage.style.color = "#c62828";
                 }
+
                 return;
             }
+
 
             if (loginButton) {
                 loginButton.disabled = true;
                 loginButton.textContent = "Signing in...";
             }
 
+
             try {
 
                 const {
                     data,
                     error
-                } = await window.supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
+                } =
+                    await window.supabaseClient.auth
+                        .signInWithPassword({
+                            email: email,
+                            password: password
+                        });
+
 
                 if (error) {
-                    console.error("Login error:", error);
+
+                    console.error(
+                        "Supabase login error:",
+                        error
+                    );
 
                     if (loginMessage) {
-                        loginMessage.textContent = error.message;
-                        loginMessage.style.color = "#c62828";
+                        loginMessage.textContent =
+                            error.message;
+                        loginMessage.style.color =
+                            "#c62828";
                     }
 
                     if (loginButton) {
                         loginButton.disabled = false;
-                        loginButton.textContent = "Sign In";
+                        loginButton.textContent =
+                            "Sign In";
                     }
 
                     return;
                 }
 
+
                 if (!data || !data.session) {
+
                     if (loginMessage) {
                         loginMessage.textContent =
                             "Login failed. No session was created.";
+                        loginMessage.style.color =
+                            "#c62828";
                     }
 
                     if (loginButton) {
                         loginButton.disabled = false;
-                        loginButton.textContent = "Sign In";
+                        loginButton.textContent =
+                            "Sign In";
                     }
 
                     return;
                 }
+
+
+                console.log("Login successful.");
+
 
                 if (loginMessage) {
                     loginMessage.textContent =
                         "Login successful. Opening dashboard...";
-                    loginMessage.style.color = "#f28c28";
+                    loginMessage.style.color =
+                        "#f28c28";
                 }
 
+
                 setTimeout(function () {
-                    window.location.replace("/admin/dashboard.html");
+                    window.location.replace(
+                        "/admin/dashboard.html"
+                    );
                 }, 500);
 
             } catch (error) {
 
-                console.error("Unexpected login error:", error);
+                console.error(
+                    "Unexpected login error:",
+                    error
+                );
 
                 if (loginMessage) {
                     loginMessage.textContent =
-                        error.message || "Login failed.";
-                    loginMessage.style.color = "#c62828";
+                        error.message ||
+                        "Login failed.";
+                    loginMessage.style.color =
+                        "#c62828";
                 }
 
                 if (loginButton) {
                     loginButton.disabled = false;
-                    loginButton.textContent = "Sign In";
+                    loginButton.textContent =
+                        "Sign In";
                 }
             }
+
         });
     }
 
 
     // ============================================================
-    // DASHBOARD PAGE
+    // DASHBOARD
     // ============================================================
 
     const dashboardPage =
@@ -138,16 +184,40 @@ document.addEventListener("DOMContentLoaded", async function () {
         const {
             data,
             error
-        } = await window.supabaseClient.auth.getSession();
+        } =
+            await window.supabaseClient.auth.getSession();
+
 
         if (error || !data || !data.session) {
             window.location.replace("/admin/");
             return;
         }
 
+
         console.log(
             "Dashboard logged in as:",
             data.session.user.email
+        );
+    }
+
+
+    // ============================================================
+    // DASHBOARD BUTTON
+    // ============================================================
+
+    const dashboardButton =
+        document.getElementById("dashboardButton");
+
+    if (dashboardButton) {
+
+        dashboardButton.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "/admin/dashboard.html";
+
+            }
         );
     }
 
@@ -166,67 +236,78 @@ document.addEventListener("DOMContentLoaded", async function () {
             async function () {
 
                 logoutButton.disabled = true;
-                logoutButton.textContent = "Signing out...";
+                logoutButton.textContent =
+                    "Signing out...";
 
-                await window.supabaseClient.auth.signOut();
 
-                window.location.replace("/admin/");
+                try {
+
+                    const {
+                        error
+                    } =
+                        await window.supabaseClient
+                            .auth.signOut();
+
+
+                    if (error) {
+                        console.error(
+                            "Logout error:",
+                            error
+                        );
+                    }
+
+
+                    window.location.replace(
+                        "/admin/"
+                    );
+
+                } catch (error) {
+
+                    console.error(
+                        "Logout error:",
+                        error
+                    );
+
+                    window.location.replace(
+                        "/admin/"
+                    );
+                }
+
             }
         );
     }
 
 
     // ============================================================
-    // MANAGE ARTICLES BUTTON
-    // ============================================================
-
-    const articlesButton =
-        document.getElementById("articlesButton");
-
-    if (articlesButton) {
-
-        articlesButton.addEventListener(
-            "click",
-            function () {
-
-                window.location.href =
-                    "/admin/articles.html";
-
-            }
-        );
-    }
-
-
-    // ============================================================
-    // ARTICLE MANAGER
+    // ARTICLES PAGE
     // ============================================================
 
     const articleForm =
         document.getElementById("articleForm");
 
-    const articlesContainer =
-        document.getElementById("articlesContainer");
-
 
     if (articleForm) {
 
         // ----------------------------------------------------------
-        // CHECK LOGIN
+        // CHECK SESSION
         // ----------------------------------------------------------
 
         const {
             data,
             error
-        } = await window.supabaseClient.auth.getSession();
+        } =
+            await window.supabaseClient.auth.getSession();
+
 
         if (error || !data || !data.session) {
+
             window.location.replace("/admin/");
             return;
         }
 
 
         // ----------------------------------------------------------
-        // FORM ELEMENTS
+        // GET FORM ELEMENTS
         // ----------------------------------------------------------
 
         const articleId =
@@ -259,38 +340,58 @@ document.addEventListener("DOMContentLoaded", async function () {
         const articleMessage =
             document.getElementById("articleMessage");
 
+        const cancelButton =
+            document.getElementById("cancelButton");
+
+        const refreshButton =
+            document.getElementById("refreshButton");
+
+        const newArticleButton =
+            document.getElementById("newArticleButton");
+
+        const articleEditor =
+            document.getElementById("articleEditor");
+
+        const editorTitle =
+            document.getElementById("editorTitle");
+
+        const articlesContainer =
+            document.getElementById(
+                "articlesContainer"
+            );
+
         const saveButton =
             articleForm.querySelector(
                 'button[type="submit"]'
             );
 
-        const cancelButton =
-            document.getElementById("cancelArticle");
-
 
         // ----------------------------------------------------------
-        // MESSAGE FUNCTION
+        // MESSAGE
         // ----------------------------------------------------------
 
-        function showArticleMessage(message, error) {
+        function showArticleMessage(
+            message,
+            isError
+        ) {
 
             if (!articleMessage) {
                 console.log(message);
                 return;
             }
 
-            articleMessage.textContent = message;
+            articleMessage.textContent =
+                message;
 
-            if (error) {
-                articleMessage.style.color = "#c62828";
-            } else {
-                articleMessage.style.color = "#f28c28";
-            }
+            articleMessage.style.color =
+                isError
+                    ? "#c62828"
+                    : "#f28c28";
         }
 
 
         // ----------------------------------------------------------
-        // CREATE SLUG
+        // SLUG
         // ----------------------------------------------------------
 
         function createSlug(title) {
@@ -304,12 +405,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         // ----------------------------------------------------------
-        // CREATE UNIQUE SLUG
+        // UNIQUE SLUG
         // ----------------------------------------------------------
 
-        async function createUniqueSlug(title, currentId) {
+        async function createUniqueSlug(
+            title,
+            currentId
+        ) {
 
-            const baseSlug = createSlug(title);
+            const baseSlug =
+                createSlug(title);
+
 
             if (!baseSlug) {
                 throw new Error(
@@ -317,8 +423,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
             }
 
+
             let slug = baseSlug;
             let counter = 2;
+
 
             while (true) {
 
@@ -329,26 +437,69 @@ document.addEventListener("DOMContentLoaded", async function () {
                         .eq("slug", slug)
                         .limit(1);
 
+
                 if (currentId) {
-                    query = query.neq("id", currentId);
+
+                    query =
+                        query.neq(
+                            "id",
+                            currentId
+                        );
                 }
+
 
                 const {
                     data,
                     error
                 } = await query;
 
+
                 if (error) {
                     throw error;
                 }
+
 
                 if (!data || data.length === 0) {
                     return slug;
                 }
 
-                slug = baseSlug + "-" + counter;
+
+                slug =
+                    baseSlug +
+                    "-" +
+                    counter;
+
                 counter++;
             }
+        }
+
+
+        // ----------------------------------------------------------
+        // RESET FORM
+        // ----------------------------------------------------------
+
+        function resetArticleForm() {
+
+            articleForm.reset();
+
+
+            if (articleId) {
+                articleId.value = "";
+            }
+
+
+            if (statusInput) {
+                statusInput.value = "draft";
+            }
+
+
+            if (editorTitle) {
+                editorTitle.textContent =
+                    "Create New Article";
+            }
+
+
+            showArticleMessage("");
         }
 
 
@@ -362,26 +513,35 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return;
             }
 
+
             articlesContainer.innerHTML =
                 "<p>Loading articles...</p>";
+
 
             try {
 
                 const {
                     data: articles,
                     error
-                } = await window.supabaseClient
-                    .from("articles")
-                    .select("*")
-                    .order("created_at", {
-                        ascending: false
-                    });
+                } =
+                    await window.supabaseClient
+                        .from("articles")
+                        .select("*")
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
 
                 if (error) {
                     throw error;
                 }
 
-                if (!articles || articles.length === 0) {
+
+                if (!articles ||
+                    articles.length === 0) {
 
                     articlesContainer.innerHTML =
                         "<p>No articles found.</p>";
@@ -393,69 +553,104 @@ document.addEventListener("DOMContentLoaded", async function () {
                 articlesContainer.innerHTML = "";
 
 
-                articles.forEach(function (article) {
+                articles.forEach(
+                    function (article) {
 
-                    const card =
-                        document.createElement("div");
+                        const card =
+                            document.createElement(
+                                "div"
+                            );
 
-                    card.className = "article-item";
-
-
-                    const title =
-                        document.createElement("h3");
-
-                    title.textContent =
-                        article.title || "Untitled";
+                        card.className =
+                            "article-item";
 
 
-                    const details =
-                        document.createElement("p");
+                        const title =
+                            document.createElement(
+                                "h3"
+                            );
 
-                    details.textContent =
-                        "Category: " +
-                        (article.category || "-") +
-                        " | Status: " +
-                        (article.status || "draft");
-
-
-                    const editButton =
-                        document.createElement("button");
-
-                    editButton.type = "button";
-                    editButton.textContent = "Edit";
+                        title.textContent =
+                            article.title ||
+                            "Untitled";
 
 
-                    const deleteButton =
-                        document.createElement("button");
+                        const details =
+                            document.createElement(
+                                "p"
+                            );
 
-                    deleteButton.type = "button";
-                    deleteButton.textContent = "Delete";
-
-
-                    editButton.addEventListener(
-                        "click",
-                        function () {
-                            editArticle(article);
-                        }
-                    );
+                        details.textContent =
+                            "Category: " +
+                            (article.category || "-") +
+                            " | Status: " +
+                            (article.status || "draft");
 
 
-                    deleteButton.addEventListener(
-                        "click",
-                        function () {
-                            deleteArticle(article.id);
-                        }
-                    );
+                        const editButton =
+                            document.createElement(
+                                "button"
+                            );
+
+                        editButton.type =
+                            "button";
+
+                        editButton.textContent =
+                            "Edit";
 
 
-                    card.appendChild(title);
-                    card.appendChild(details);
-                    card.appendChild(editButton);
-                    card.appendChild(deleteButton);
+                        const deleteButton =
+                            document.createElement(
+                                "button"
+                            );
 
-                    articlesContainer.appendChild(card);
+                        deleteButton.type =
+                            "button";
 
-                });
+                        deleteButton.textContent =
+                            "Delete";
+
+
+                        editButton.addEventListener(
+                            "click",
+                            function () {
+
+                                editArticle(
+                                    article
+                                );
+
+                            }
+                        );
+
+
+                        deleteButton.addEventListener(
+                            "click",
+                            function () {
+
+                                deleteArticle(
+                                    article.id
+                                );
+
+                            }
+                        );
+
+
+                        card.appendChild(title);
+                        card.appendChild(details);
+                        card.appendChild(
+                            editButton
+                        );
+                        card.appendChild(
+                            deleteButton
+                        );
+
+
+                        articlesContainer.appendChild(
+                            card
+                        );
+
+                    }
+                );
 
             } catch (error) {
 
@@ -464,9 +659,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     error
                 );
 
-                articlesContainer.innerHTML =
-                    "<p>Unable to load articles.</p>";
 
+                articlesContainer.innerHTML =
+                    "<p>Unable to load articles. Check the browser console for details.</p>";
             }
         }
 
@@ -481,24 +676,66 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 event.preventDefault();
 
+
                 const title =
                     titleInput
                         ? titleInput.value.trim()
                         : "";
 
+
+                const content =
+                    contentInput
+                        ? contentInput.value.trim()
+                        : "";
+
+
+                const category =
+                    categoryInput
+                        ? categoryInput.value
+                        : "";
+
+
                 if (!title) {
+
                     showArticleMessage(
                         "Please enter an article title.",
                         true
                     );
+
+                    return;
+                }
+
+
+                if (!category) {
+
+                    showArticleMessage(
+                        "Please select a category.",
+                        true
+                    );
+
+                    return;
+                }
+
+
+                if (!content) {
+
+                    showArticleMessage(
+                        "Please enter article content.",
+                        true
+                    );
+
                     return;
                 }
 
 
                 if (saveButton) {
+
                     saveButton.disabled = true;
-                    saveButton.textContent = "Saving...";
+                    saveButton.textContent =
+                        "Saving...";
+
                 }
+
 
                 showArticleMessage(
                     "Saving article..."
@@ -526,10 +763,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         slug: slug,
 
-                        category:
-                            categoryInput
-                                ? categoryInput.value
-                                : "Finance",
+                        category: category,
 
                         author:
                             authorInput
@@ -546,10 +780,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                                 ? excerptInput.value.trim()
                                 : "",
 
-                        content:
-                            contentInput
-                                ? contentInput.value
-                                : "",
+                        content: content,
 
                         status:
                             statusInput
@@ -566,36 +797,37 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                         updated_at:
                             new Date().toISOString()
+
                     };
 
 
                     let result;
 
 
-                    // ------------------------------------------------
                     // UPDATE
-                    // ------------------------------------------------
-
                     if (currentId) {
 
                         result =
                             await window.supabaseClient
                                 .from("articles")
                                 .update(articleData)
-                                .eq("id", currentId);
+                                .eq(
+                                    "id",
+                                    currentId
+                                );
 
                     }
 
-                    // ------------------------------------------------
-                    // INSERT
-                    // ------------------------------------------------
 
+                    // INSERT
                     else {
 
                         result =
                             await window.supabaseClient
                                 .from("articles")
-                                .insert(articleData);
+                                .insert(
+                                    articleData
+                                );
 
                     }
 
@@ -612,6 +844,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     resetArticleForm();
 
+
                     await loadArticles();
 
 
@@ -622,6 +855,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         error
                     );
 
+
                     showArticleMessage(
                         error.message ||
                         "Unable to save article.",
@@ -631,10 +865,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 } finally {
 
                     if (saveButton) {
-                        saveButton.disabled = false;
-                        saveButton.textContent = "Save Article";
-                    }
 
+                        saveButton.disabled =
+                            false;
+
+                        saveButton.textContent =
+                            "Save Article";
+                    }
                 }
 
             }
@@ -648,49 +885,63 @@ document.addEventListener("DOMContentLoaded", async function () {
         function editArticle(article) {
 
             if (articleId) {
-                articleId.value = article.id || "";
+                articleId.value =
+                    article.id || "";
             }
+
 
             if (titleInput) {
                 titleInput.value =
                     article.title || "";
             }
 
+
             if (categoryInput) {
                 categoryInput.value =
-                    article.category || "Finance";
+                    article.category || "";
             }
+
 
             if (authorInput) {
                 authorInput.value =
                     article.author || "";
             }
 
+
             if (imageInput) {
                 imageInput.value =
                     article.featured_image || "";
             }
+
 
             if (excerptInput) {
                 excerptInput.value =
                     article.excerpt || "";
             }
 
+
             if (contentInput) {
                 contentInput.value =
                     article.content || "";
             }
+
 
             if (statusInput) {
                 statusInput.value =
                     article.status || "draft";
             }
 
-            if (publishedAtInput &&
-                article.published_at) {
+
+            if (
+                publishedAtInput &&
+                article.published_at
+            ) {
 
                 const date =
-                    new Date(article.published_at);
+                    new Date(
+                        article.published_at
+                    );
+
 
                 const year =
                     date.getFullYear();
@@ -715,6 +966,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         date.getMinutes()
                     ).padStart(2, "0");
 
+
                 publishedAtInput.value =
                     year +
                     "-" +
@@ -728,11 +980,20 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+            if (editorTitle) {
+                editorTitle.textContent =
+                    "Edit Article";
+            }
 
+
+            if (articleEditor) {
+
+                articleEditor.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }
         }
 
 
@@ -746,10 +1007,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return;
             }
 
+
             const confirmed =
                 window.confirm(
                     "Are you sure you want to delete this article?"
                 );
+
 
             if (!confirmed) {
                 return;
@@ -760,10 +1023,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 const {
                     error
-                } = await window.supabaseClient
-                    .from("articles")
-                    .delete()
-                    .eq("id", id);
+                } =
+                    await window.supabaseClient
+                        .from("articles")
+                        .delete()
+                        .eq("id", id);
 
 
                 if (error) {
@@ -775,7 +1039,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     "Article deleted successfully."
                 );
 
+
                 await loadArticles();
+
 
             } catch (error) {
 
@@ -783,6 +1049,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     "Delete article error:",
                     error
                 );
+
 
                 showArticleMessage(
                     error.message ||
@@ -794,25 +1061,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         // ----------------------------------------------------------
-        // RESET FORM
-        // ----------------------------------------------------------
-
-        function resetArticleForm() {
-
-            articleForm.reset();
-
-            if (articleId) {
-                articleId.value = "";
-            }
-
-            if (statusInput) {
-                statusInput.value = "draft";
-            }
-        }
-
-
-        // ----------------------------------------------------------
-        // CANCEL
+        // CANCEL BUTTON
         // ----------------------------------------------------------
 
         if (cancelButton) {
@@ -823,7 +1072,32 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     resetArticleForm();
 
-                    showArticleMessage("");
+                }
+            );
+        }
+
+
+        // ----------------------------------------------------------
+        // NEW ARTICLE BUTTON
+        // ----------------------------------------------------------
+
+        if (newArticleButton) {
+
+            newArticleButton.addEventListener(
+                "click",
+                function () {
+
+                    resetArticleForm();
+
+
+                    if (articleEditor) {
+
+                        articleEditor.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+
+                    }
 
                 }
             );
@@ -834,15 +1108,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         // REFRESH BUTTON
         // ----------------------------------------------------------
 
-        const refreshButton =
-            document.getElementById("refreshArticles");
-
         if (refreshButton) {
 
             refreshButton.addEventListener(
                 "click",
                 function () {
+
                     loadArticles();
+
                 }
             );
         }
@@ -862,7 +1135,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ============================================================
 
     console.log(
-        "GFS Admin Portal JavaScript loaded successfully."
+        "GFS Admin Portal loaded successfully."
     );
 
 });
