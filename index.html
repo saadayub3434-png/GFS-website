@@ -1148,7 +1148,186 @@ Audit &amp; Assurance, Tax, Risk and Advisory solutions for organizations that v
 </div>
 
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+
+<script>
+async function loadPublicArticles() {
+
+  const container = document.getElementById("articlesContainer");
+
+  if (!container) return;
+
+  try {
+
+    const { data, error } = await window.supabaseClient
+      .from("articles")
+      .select(`
+        id,
+        title,
+        slug,
+        category,
+        author,
+        excerpt,
+        content,
+        featured_image,
+        status,
+        published_at
+      `)
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+
+    if (error) {
+      console.error("Supabase articles error:", error);
+      container.innerHTML = `
+        <p style="color:#b00020;">
+          Unable to load insights.
+        </p>
+      `;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = `
+        <p style="color:var(--grey);">
+          No published insights available.
+        </p>
+      `;
+      return;
+    }
+
+    container.innerHTML = data.map(article => {
+
+      const date = article.published_at
+        ? new Date(article.published_at).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+          })
+        : "";
+
+      const image = article.featured_image
+        ? `
+          <img
+            src="${escapeHtml(article.featured_image)}"
+            alt="${escapeHtml(article.title)}"
+            style="
+              width:100%;
+              height:190px;
+              object-fit:cover;
+              display:block;
+              margin:-28px -28px 24px;
+              width:calc(100% + 56px);
+            "
+          >
+        `
+        : "";
+
+      return `
+        <article class="article">
+
+          ${image}
+
+          <div class="cat">
+            ${escapeHtml(article.category || "GFS Insights")}
+          </div>
+
+          <h3>
+            ${escapeHtml(article.title)}
+          </h3>
+
+          <p>
+            ${escapeHtml(
+              article.excerpt ||
+              getShortExcerpt(article.content)
+            )}
+          </p>
+
+          <div class="meta">
+            ${escapeHtml(article.author || "GFS Team")}
+            ${date ? " · " + date : ""}
+          </div>
+
+          <a
+            href="#"
+            onclick="openArticle('${article.id}'); return false;"
+            style="
+              display:inline-block;
+              margin-top:18px;
+              font-weight:600;
+              font-size:15px;
+              border-bottom:2px solid var(--orange);
+              align-self:flex-start;
+              padding-bottom:2px;
+            "
+          >
+            Read Article →
+          </a>
+
+        </article>
+      `;
+
+    }).join("");
+
+  } catch (err) {
+
+    console.error("Unexpected articles error:", err);
+
+    container.innerHTML = `
+      <p style="color:#b00020;">
+        Unable to load insights.
+      </p>
+    `;
+  }
+}
+
+
+function getShortExcerpt(content) {
+
+  if (!content) return "";
+
+  const text = content
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return text.length > 180
+    ? text.substring(0, 180) + "..."
+    : text;
+}
+
+
+function escapeHtml(value) {
+
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+function openArticle(articleId) {
+
+  alert("Article page will be connected next.");
+
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  loadPublicArticles();
+
+});
+</script>
 
 </body>
 </html>
+
+
 
