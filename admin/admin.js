@@ -1,6 +1,6 @@
 // ============================================================
 // GFS ADMIN PORTAL
-// Login + Dashboard + Logout + Articles Navigation
+// Login + Dashboard + Logout + Article Management
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -11,14 +11,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (!window.supabaseClient) {
         console.error("Supabase client is not available.");
-
-        const message = document.getElementById("loginMessage");
-
-        if (message) {
-            message.textContent = "Supabase connection is not available.";
-            message.style.color = "#c62828";
-        }
-
         return;
     }
 
@@ -31,32 +23,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (loginForm) {
 
-        try {
+        const {
+            data: sessionData
+        } = await window.supabaseClient.auth.getSession();
 
-            // Check existing session
-            const {
-                data: sessionData,
-                error: sessionError
-            } = await window.supabaseClient.auth.getSession();
-
-            if (sessionError) {
-                console.error("Session check error:", sessionError);
-            }
-
-            if (sessionData && sessionData.session) {
-                console.log("Existing session found.");
-                window.location.replace("/admin/dashboard.html");
-                return;
-            }
-
-        } catch (error) {
-            console.error("Error checking session:", error);
+        if (sessionData && sessionData.session) {
+            window.location.replace("/admin/dashboard.html");
+            return;
         }
-
-
-        // ------------------------------------------------------------
-        // LOGIN FORM SUBMISSION
-        // ------------------------------------------------------------
 
         loginForm.addEventListener("submit", async function (event) {
 
@@ -67,49 +41,23 @@ document.addEventListener("DOMContentLoaded", async function () {
             const loginButton = document.getElementById("loginButton");
             const loginMessage = document.getElementById("loginMessage");
 
-            const email = emailInput
-                ? emailInput.value.trim()
-                : "";
+            const email = emailInput ? emailInput.value.trim() : "";
+            const password = passwordInput ? passwordInput.value : "";
 
-            const password = passwordInput
-                ? passwordInput.value
-                : "";
-
-
-            // Validate fields
             if (!email || !password) {
-
                 if (loginMessage) {
                     loginMessage.textContent =
                         "Please enter your email and password.";
-                    loginMessage.style.color = "#c62828";
                 }
-
                 return;
             }
 
-
-            // Disable button
             if (loginButton) {
                 loginButton.disabled = true;
                 loginButton.textContent = "Signing in...";
             }
 
-
-            if (loginMessage) {
-                loginMessage.textContent = "Signing in...";
-                loginMessage.style.color = "#f28c28";
-            }
-
-
             try {
-
-                console.log("Attempting Supabase login...");
-
-
-                // ----------------------------------------------------
-                // SUPABASE LOGIN
-                // ----------------------------------------------------
 
                 const {
                     data,
@@ -119,14 +67,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     password: password
                 });
 
-
-                // ----------------------------------------------------
-                // LOGIN ERROR
-                // ----------------------------------------------------
-
                 if (error) {
-
-                    console.error("Supabase login error:", error);
+                    console.error("Login error:", error);
 
                     if (loginMessage) {
                         loginMessage.textContent = error.message;
@@ -141,19 +83,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                     return;
                 }
 
-
-                // ----------------------------------------------------
-                // CHECK SESSION
-                // ----------------------------------------------------
-
                 if (!data || !data.session) {
-
-                    console.error("No session returned from Supabase.");
-
                     if (loginMessage) {
                         loginMessage.textContent =
-                            "Login failed. No active session was created.";
-                        loginMessage.style.color = "#c62828";
+                            "Login failed. No session was created.";
                     }
 
                     if (loginButton) {
@@ -164,25 +97,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                     return;
                 }
 
-
-                // ----------------------------------------------------
-                // LOGIN SUCCESS
-                // ----------------------------------------------------
-
-                console.log("Login successful.");
-                console.log("Logged in user:", data.user.email);
-
-
                 if (loginMessage) {
                     loginMessage.textContent =
                         "Login successful. Opening dashboard...";
                     loginMessage.style.color = "#f28c28";
                 }
-
-
-                // ----------------------------------------------------
-                // REDIRECT TO DASHBOARD
-                // ----------------------------------------------------
 
                 setTimeout(function () {
                     window.location.replace("/admin/dashboard.html");
@@ -194,8 +113,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 if (loginMessage) {
                     loginMessage.textContent =
-                        error.message ||
-                        "An unexpected error occurred.";
+                        error.message || "Login failed.";
                     loginMessage.style.color = "#c62828";
                 }
 
@@ -204,7 +122,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     loginButton.textContent = "Sign In";
                 }
             }
-
         });
     }
 
@@ -218,53 +135,20 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (dashboardPage) {
 
-        try {
+        const {
+            data,
+            error
+        } = await window.supabaseClient.auth.getSession();
 
-            const {
-                data,
-                error
-            } = await window.supabaseClient.auth.getSession();
-
-
-            // Session error
-            if (error) {
-
-                console.error("Dashboard session error:", error);
-
-                window.location.replace("/admin/");
-                return;
-            }
-
-
-            // No session
-            if (!data || !data.session) {
-
-                console.log(
-                    "No active session. Returning to login."
-                );
-
-                window.location.replace("/admin/");
-                return;
-            }
-
-
-            // Session exists
-            console.log("Dashboard session active.");
-            console.log(
-                "Logged in as:",
-                data.session.user.email
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Unexpected dashboard error:",
-                error
-            );
-
+        if (error || !data || !data.session) {
             window.location.replace("/admin/");
             return;
         }
+
+        console.log(
+            "Dashboard logged in as:",
+            data.session.user.email
+        );
     }
 
 
@@ -284,39 +168,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 logoutButton.disabled = true;
                 logoutButton.textContent = "Signing out...";
 
-                try {
+                await window.supabaseClient.auth.signOut();
 
-                    const { error } =
-                        await window.supabaseClient.auth.signOut();
-
-
-                    if (error) {
-
-                        console.error(
-                            "Logout error:",
-                            error
-                        );
-
-                        logoutButton.disabled = false;
-                        logoutButton.textContent = "Logout";
-
-                        return;
-                    }
-
-
-                    // Return to login
-                    window.location.replace("/admin/");
-
-                } catch (error) {
-
-                    console.error(
-                        "Unexpected logout error:",
-                        error
-                    );
-
-                    window.location.replace("/admin/");
-                }
-
+                window.location.replace("/admin/");
             }
         );
     }
@@ -344,10 +198,671 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ============================================================
-    // END
+    // ARTICLE MANAGER
     // ============================================================
 
-    console.log("GFS Admin JavaScript loaded successfully.");
+    const articleForm =
+        document.getElementById("articleForm");
+
+    const articlesContainer =
+        document.getElementById("articlesContainer");
+
+
+    if (articleForm) {
+
+        // ----------------------------------------------------------
+        // CHECK LOGIN
+        // ----------------------------------------------------------
+
+        const {
+            data,
+            error
+        } = await window.supabaseClient.auth.getSession();
+
+        if (error || !data || !data.session) {
+            window.location.replace("/admin/");
+            return;
+        }
+
+
+        // ----------------------------------------------------------
+        // FORM ELEMENTS
+        // ----------------------------------------------------------
+
+        const articleId =
+            document.getElementById("articleId");
+
+        const titleInput =
+            document.getElementById("title");
+
+        const categoryInput =
+            document.getElementById("category");
+
+        const authorInput =
+            document.getElementById("author");
+
+        const imageInput =
+            document.getElementById("featuredImage");
+
+        const excerptInput =
+            document.getElementById("excerpt");
+
+        const contentInput =
+            document.getElementById("content");
+
+        const statusInput =
+            document.getElementById("status");
+
+        const publishedAtInput =
+            document.getElementById("publishedAt");
+
+        const articleMessage =
+            document.getElementById("articleMessage");
+
+        const saveButton =
+            articleForm.querySelector(
+                'button[type="submit"]'
+            );
+
+        const cancelButton =
+            document.getElementById("cancelArticle");
+
+
+        // ----------------------------------------------------------
+        // MESSAGE FUNCTION
+        // ----------------------------------------------------------
+
+        function showArticleMessage(message, error) {
+
+            if (!articleMessage) {
+                console.log(message);
+                return;
+            }
+
+            articleMessage.textContent = message;
+
+            if (error) {
+                articleMessage.style.color = "#c62828";
+            } else {
+                articleMessage.style.color = "#f28c28";
+            }
+        }
+
+
+        // ----------------------------------------------------------
+        // CREATE SLUG
+        // ----------------------------------------------------------
+
+        function createSlug(title) {
+
+            return title
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+        }
+
+
+        // ----------------------------------------------------------
+        // CREATE UNIQUE SLUG
+        // ----------------------------------------------------------
+
+        async function createUniqueSlug(title, currentId) {
+
+            const baseSlug = createSlug(title);
+
+            if (!baseSlug) {
+                throw new Error(
+                    "Please enter a valid article title."
+                );
+            }
+
+            let slug = baseSlug;
+            let counter = 2;
+
+            while (true) {
+
+                let query =
+                    window.supabaseClient
+                        .from("articles")
+                        .select("id")
+                        .eq("slug", slug)
+                        .limit(1);
+
+                if (currentId) {
+                    query = query.neq("id", currentId);
+                }
+
+                const {
+                    data,
+                    error
+                } = await query;
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!data || data.length === 0) {
+                    return slug;
+                }
+
+                slug = baseSlug + "-" + counter;
+                counter++;
+            }
+        }
+
+
+        // ----------------------------------------------------------
+        // LOAD ARTICLES
+        // ----------------------------------------------------------
+
+        async function loadArticles() {
+
+            if (!articlesContainer) {
+                return;
+            }
+
+            articlesContainer.innerHTML =
+                "<p>Loading articles...</p>";
+
+            try {
+
+                const {
+                    data: articles,
+                    error
+                } = await window.supabaseClient
+                    .from("articles")
+                    .select("*")
+                    .order("created_at", {
+                        ascending: false
+                    });
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!articles || articles.length === 0) {
+
+                    articlesContainer.innerHTML =
+                        "<p>No articles found.</p>";
+
+                    return;
+                }
+
+
+                articlesContainer.innerHTML = "";
+
+
+                articles.forEach(function (article) {
+
+                    const card =
+                        document.createElement("div");
+
+                    card.className = "article-item";
+
+
+                    const title =
+                        document.createElement("h3");
+
+                    title.textContent =
+                        article.title || "Untitled";
+
+
+                    const details =
+                        document.createElement("p");
+
+                    details.textContent =
+                        "Category: " +
+                        (article.category || "-") +
+                        " | Status: " +
+                        (article.status || "draft");
+
+
+                    const editButton =
+                        document.createElement("button");
+
+                    editButton.type = "button";
+                    editButton.textContent = "Edit";
+
+
+                    const deleteButton =
+                        document.createElement("button");
+
+                    deleteButton.type = "button";
+                    deleteButton.textContent = "Delete";
+
+
+                    editButton.addEventListener(
+                        "click",
+                        function () {
+                            editArticle(article);
+                        }
+                    );
+
+
+                    deleteButton.addEventListener(
+                        "click",
+                        function () {
+                            deleteArticle(article.id);
+                        }
+                    );
+
+
+                    card.appendChild(title);
+                    card.appendChild(details);
+                    card.appendChild(editButton);
+                    card.appendChild(deleteButton);
+
+                    articlesContainer.appendChild(card);
+
+                });
+
+            } catch (error) {
+
+                console.error(
+                    "Load articles error:",
+                    error
+                );
+
+                articlesContainer.innerHTML =
+                    "<p>Unable to load articles.</p>";
+
+            }
+        }
+
+
+        // ----------------------------------------------------------
+        // SAVE ARTICLE
+        // ----------------------------------------------------------
+
+        articleForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                const title =
+                    titleInput
+                        ? titleInput.value.trim()
+                        : "";
+
+                if (!title) {
+                    showArticleMessage(
+                        "Please enter an article title.",
+                        true
+                    );
+                    return;
+                }
+
+
+                if (saveButton) {
+                    saveButton.disabled = true;
+                    saveButton.textContent = "Saving...";
+                }
+
+                showArticleMessage(
+                    "Saving article..."
+                );
+
+
+                try {
+
+                    const currentId =
+                        articleId
+                            ? articleId.value
+                            : "";
+
+
+                    const slug =
+                        await createUniqueSlug(
+                            title,
+                            currentId
+                        );
+
+
+                    const articleData = {
+
+                        title: title,
+
+                        slug: slug,
+
+                        category:
+                            categoryInput
+                                ? categoryInput.value
+                                : "Finance",
+
+                        author:
+                            authorInput
+                                ? authorInput.value.trim()
+                                : "",
+
+                        featured_image:
+                            imageInput
+                                ? imageInput.value.trim()
+                                : "",
+
+                        excerpt:
+                            excerptInput
+                                ? excerptInput.value.trim()
+                                : "",
+
+                        content:
+                            contentInput
+                                ? contentInput.value
+                                : "",
+
+                        status:
+                            statusInput
+                                ? statusInput.value
+                                : "draft",
+
+                        published_at:
+                            publishedAtInput &&
+                            publishedAtInput.value
+                                ? new Date(
+                                    publishedAtInput.value
+                                  ).toISOString()
+                                : null,
+
+                        updated_at:
+                            new Date().toISOString()
+                    };
+
+
+                    let result;
+
+
+                    // ------------------------------------------------
+                    // UPDATE
+                    // ------------------------------------------------
+
+                    if (currentId) {
+
+                        result =
+                            await window.supabaseClient
+                                .from("articles")
+                                .update(articleData)
+                                .eq("id", currentId);
+
+                    }
+
+                    // ------------------------------------------------
+                    // INSERT
+                    // ------------------------------------------------
+
+                    else {
+
+                        result =
+                            await window.supabaseClient
+                                .from("articles")
+                                .insert(articleData);
+
+                    }
+
+
+                    if (result.error) {
+                        throw result.error;
+                    }
+
+
+                    showArticleMessage(
+                        "Article saved successfully."
+                    );
+
+
+                    resetArticleForm();
+
+                    await loadArticles();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Save article error:",
+                        error
+                    );
+
+                    showArticleMessage(
+                        error.message ||
+                        "Unable to save article.",
+                        true
+                    );
+
+                } finally {
+
+                    if (saveButton) {
+                        saveButton.disabled = false;
+                        saveButton.textContent = "Save Article";
+                    }
+
+                }
+
+            }
+        );
+
+
+        // ----------------------------------------------------------
+        // EDIT ARTICLE
+        // ----------------------------------------------------------
+
+        function editArticle(article) {
+
+            if (articleId) {
+                articleId.value = article.id || "";
+            }
+
+            if (titleInput) {
+                titleInput.value =
+                    article.title || "";
+            }
+
+            if (categoryInput) {
+                categoryInput.value =
+                    article.category || "Finance";
+            }
+
+            if (authorInput) {
+                authorInput.value =
+                    article.author || "";
+            }
+
+            if (imageInput) {
+                imageInput.value =
+                    article.featured_image || "";
+            }
+
+            if (excerptInput) {
+                excerptInput.value =
+                    article.excerpt || "";
+            }
+
+            if (contentInput) {
+                contentInput.value =
+                    article.content || "";
+            }
+
+            if (statusInput) {
+                statusInput.value =
+                    article.status || "draft";
+            }
+
+            if (publishedAtInput &&
+                article.published_at) {
+
+                const date =
+                    new Date(article.published_at);
+
+                const year =
+                    date.getFullYear();
+
+                const month =
+                    String(
+                        date.getMonth() + 1
+                    ).padStart(2, "0");
+
+                const day =
+                    String(
+                        date.getDate()
+                    ).padStart(2, "0");
+
+                const hours =
+                    String(
+                        date.getHours()
+                    ).padStart(2, "0");
+
+                const minutes =
+                    String(
+                        date.getMinutes()
+                    ).padStart(2, "0");
+
+                publishedAtInput.value =
+                    year +
+                    "-" +
+                    month +
+                    "-" +
+                    day +
+                    "T" +
+                    hours +
+                    ":" +
+                    minutes;
+            }
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        // ----------------------------------------------------------
+        // DELETE ARTICLE
+        // ----------------------------------------------------------
+
+        async function deleteArticle(id) {
+
+            if (!id) {
+                return;
+            }
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to delete this article?"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            try {
+
+                const {
+                    error
+                } = await window.supabaseClient
+                    .from("articles")
+                    .delete()
+                    .eq("id", id);
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                showArticleMessage(
+                    "Article deleted successfully."
+                );
+
+                await loadArticles();
+
+            } catch (error) {
+
+                console.error(
+                    "Delete article error:",
+                    error
+                );
+
+                showArticleMessage(
+                    error.message ||
+                    "Unable to delete article.",
+                    true
+                );
+            }
+        }
+
+
+        // ----------------------------------------------------------
+        // RESET FORM
+        // ----------------------------------------------------------
+
+        function resetArticleForm() {
+
+            articleForm.reset();
+
+            if (articleId) {
+                articleId.value = "";
+            }
+
+            if (statusInput) {
+                statusInput.value = "draft";
+            }
+        }
+
+
+        // ----------------------------------------------------------
+        // CANCEL
+        // ----------------------------------------------------------
+
+        if (cancelButton) {
+
+            cancelButton.addEventListener(
+                "click",
+                function () {
+
+                    resetArticleForm();
+
+                    showArticleMessage("");
+
+                }
+            );
+        }
+
+
+        // ----------------------------------------------------------
+        // REFRESH BUTTON
+        // ----------------------------------------------------------
+
+        const refreshButton =
+            document.getElementById("refreshArticles");
+
+        if (refreshButton) {
+
+            refreshButton.addEventListener(
+                "click",
+                function () {
+                    loadArticles();
+                }
+            );
+        }
+
+
+        // ----------------------------------------------------------
+        // INITIAL LOAD
+        // ----------------------------------------------------------
+
+        await loadArticles();
+
+    }
+
+
+    // ============================================================
+    // COMPLETE
+    // ============================================================
+
+    console.log(
+        "GFS Admin Portal JavaScript loaded successfully."
+    );
 
 });
-
