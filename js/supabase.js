@@ -1,0 +1,1 @@
+// GFS Supabase Configuration
