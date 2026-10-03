@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GFS Admin Dashboard</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+</head>
+
+<body>
+
+    <div class="admin-dashboard">
+
+        <header class="dashboard-header">
+
+            <div class="dashboard-brand">
+
+                <img
+                    src="../logo.png"
+                    alt="GFS"
+                    class="dashboard-logo"
+                >
+
+                <div>
+                    <strong>GFS</strong>
+                    <span>Admin Portal</span>
+                </div>
+
+            </div>
+
+            <button id="logoutButton">
+                Logout
+            </button>
+
+        </header>
+
+
+        <main class="dashboard-main">
+
+            <h1>Dashboard</h1>
+
+            <p>
+                Welcome to the Global Financial Services
+                administration portal.
+            </p>
+
+
+            <div class="dashboard-cards">
+
+                <div class="dashboard-card">
+
+                    <h2>Articles</h2>
+
+                    <p>
+                        Create, edit and publish articles
+                        for the GFS Insights section.
+                    </p>
+
+                    <button id="articlesButton">
+                        Manage Articles
+                    </button>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <h2>Website</h2>
+
+                    <p>
+                        View the public GFS website.
+                    </p>
+
+                    <a href="../index.html" target="_blank">
+                        Open Website
+                    </a>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- GFS Supabase Configuration -->
+    <script src="../js/supabase.js"></script>
+
+    <!-- Admin JavaScript -->
+    <script src="admin.js"></script>
+
+</body>
+
+</html>
