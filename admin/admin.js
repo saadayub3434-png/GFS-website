@@ -6,17 +6,12 @@
 
 document.addEventListener("DOMContentLoaded", async function () {
 
-    // ========================================================
-    // COMMON
-    // ========================================================
-
     const supabase = window.supabaseClient;
 
     if (!supabase) {
         console.error("Supabase client not available.");
         return;
     }
-
 
     // ========================================================
     // LOGIN PAGE
@@ -32,74 +27,49 @@ document.addEventListener("DOMContentLoaded", async function () {
         const loginButton =
             document.getElementById("loginButton");
 
+        loginForm.addEventListener("submit", async function (event) {
 
-        loginForm.addEventListener(
-            "submit",
-            async function (event) {
+            event.preventDefault();
 
-                event.preventDefault();
+            const email =
+                document.getElementById("email").value.trim();
 
-                const email =
-                    document.getElementById("email")
-                        .value
-                        .trim();
+            const password =
+                document.getElementById("password").value;
 
-                const password =
-                    document.getElementById("password")
-                        .value;
+            loginMessage.textContent = "Signing in...";
+            loginButton.disabled = true;
 
+            try {
 
-                loginMessage.textContent =
-                    "Signing in...";
+                const result =
+                    await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
 
-                loginButton.disabled = true;
-
-
-                try {
-
-                    const {
-                        data,
-                        error
-                    } = await supabase.auth
-                        .signInWithPassword({
-                            email,
-                            password
-                        });
-
-
-                    if (error) {
-                        throw error;
-                    }
-
-
-                    if (!data.session) {
-                        throw new Error("Login failed.");
-                    }
-
-
-                    window.location.href =
-                        "dashboard.html";
-
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    loginMessage.textContent =
-                        error.message ||
-                        "Unable to sign in.";
-
-                    loginButton.disabled =
-                        false;
-
-                    loginButton.textContent =
-                        "Sign In";
-
+                if (result.error) {
+                    throw result.error;
                 }
 
-            }
-        );
+                if (!result.data.session) {
+                    throw new Error("Login failed.");
+                }
 
+                window.location.href = "dashboard.html";
+
+            } catch (error) {
+
+                console.error(error);
+
+                loginMessage.textContent =
+                    error.message || "Unable to sign in.";
+
+                loginButton.disabled = false;
+                loginButton.textContent = "Sign In";
+            }
+
+        });
     }
 
 
@@ -110,38 +80,28 @@ document.addEventListener("DOMContentLoaded", async function () {
     const logoutButton =
         document.getElementById("logoutButton");
 
-
     if (logoutButton) {
 
-        const {
-            data: {
-                session
-            }
-        } = await supabase.auth.getSession();
+        const sessionResult =
+            await supabase.auth.getSession();
 
+        const session =
+            sessionResult.data.session;
 
         if (!session) {
 
-            window.location.href =
-                "index.html";
-
+            window.location.href = "index.html";
             return;
 
         }
 
+        logoutButton.addEventListener("click", async function () {
 
-        logoutButton.addEventListener(
-            "click",
-            async function () {
+            await supabase.auth.signOut();
 
-                await supabase.auth.signOut();
+            window.location.href = "index.html";
 
-                window.location.href =
-                    "index.html";
-
-            }
-        );
-
+        });
     }
 
 
@@ -150,23 +110,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ========================================================
 
     const dashboardButton =
-        document.getElementById(
-            "dashboardButton"
-        );
-
+        document.getElementById("dashboardButton");
 
     if (dashboardButton) {
 
-        dashboardButton.addEventListener(
-            "click",
-            function () {
+        dashboardButton.addEventListener("click", function () {
 
-                window.location.href =
-                    "dashboard.html";
+            window.location.href = "dashboard.html";
 
-            }
-        );
-
+        });
     }
 
 
@@ -175,10 +127,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // ========================================================
 
     const articleForm =
-        document.getElementById(
-            "articleForm"
-        );
-
+        document.getElementById("articleForm");
 
     if (!articleForm) {
         return;
@@ -189,18 +138,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Verify Login
     // --------------------------------------------------------
 
-    const {
-        data: {
-            session
-        }
-    } = await supabase.auth.getSession();
+    const sessionResult =
+        await supabase.auth.getSession();
 
+    const session =
+        sessionResult.data.session;
 
     if (!session) {
 
-        window.location.href =
-            "index.html";
-
+        window.location.href = "index.html";
         return;
 
     }
@@ -211,243 +157,165 @@ document.addEventListener("DOMContentLoaded", async function () {
     // --------------------------------------------------------
 
     const articleEditor =
-        document.getElementById(
-            "articleEditor"
-        );
+        document.getElementById("articleEditor");
 
     const newArticleButton =
-        document.getElementById(
-            "newArticleButton"
-        );
+        document.getElementById("newArticleButton");
 
     const cancelButton =
-        document.getElementById(
-            "cancelButton"
-        );
+        document.getElementById("cancelButton");
 
     const refreshButton =
-        document.getElementById(
-            "refreshButton"
-        );
+        document.getElementById("refreshButton");
 
     const articlesContainer =
-        document.getElementById(
-            "articlesContainer"
-        );
+        document.getElementById("articlesContainer");
 
     const articleMessage =
-        document.getElementById(
-            "articleMessage"
-        );
+        document.getElementById("articleMessage");
 
 
-    // --------------------------------------------------------
-    // New Article
-    // --------------------------------------------------------
+    // ========================================================
+    // NEW ARTICLE
+    // ========================================================
 
-    newArticleButton.addEventListener(
-        "click",
-        function () {
+    newArticleButton.addEventListener("click", function () {
 
-            articleForm.reset();
+        articleForm.reset();
 
-            document.getElementById(
-                "articleId"
-            ).value = "";
+        document.getElementById("articleId").value = "";
+
+        document.getElementById("editorTitle").textContent =
+            "Create New Article";
+
+        articleMessage.textContent = "";
+
+        articleEditor.style.display = "block";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    });
 
 
-            document.getElementById(
-                "editorTitle"
-            ).textContent =
-                "Create New Article";
+    // ========================================================
+    // CANCEL
+    // ========================================================
+
+    cancelButton.addEventListener("click", function () {
+
+        articleForm.reset();
+
+        document.getElementById("articleId").value = "";
+
+        articleEditor.style.display = "none";
+
+        articleMessage.textContent = "";
+
+    });
 
 
-            articleEditor.style.display =
-                "block";
+    // ========================================================
+    // CREATE / UPDATE ARTICLE
+    // ========================================================
 
+    articleForm.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        articleMessage.textContent = "Saving article...";
+
+
+        const id =
+            document.getElementById("articleId").value;
+
+        const title =
+            document.getElementById("title").value.trim();
+
+        const category =
+            document.getElementById("category").value;
+
+        const author =
+            document.getElementById("author").value.trim();
+
+        const excerpt =
+            document.getElementById("excerpt").value.trim();
+
+        const content =
+            document.getElementById("content").value.trim();
+
+        const featuredImage =
+            document.getElementById("featuredImage").value.trim();
+
+        const status =
+            document.getElementById("status").value;
+
+        const publishedAt =
+            document.getElementById("publishedAt").value;
+
+
+        // ----------------------------------------------------
+        // Validation
+        // ----------------------------------------------------
+
+        if (!title) {
 
             articleMessage.textContent =
-                "";
+                "Please enter an article title.";
 
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
+            return;
         }
-    );
 
-
-    // --------------------------------------------------------
-    // Cancel
-    // --------------------------------------------------------
-
-    cancelButton.addEventListener(
-        "click",
-        function () {
-
-            articleForm.reset();
-
-            document.getElementById(
-                "articleId"
-            ).value = "";
-
-
-            articleEditor.style.display =
-                "none";
-
+        if (!category) {
 
             articleMessage.textContent =
-                "";
+                "Please select a category.";
 
+            return;
         }
-    );
 
-
-    // --------------------------------------------------------
-    // Create / Update Article
-    // --------------------------------------------------------
-
-    articleForm.addEventListener(
-        "submit",
-        async function (event) {
-
-            event.preventDefault();
-
+        if (!content) {
 
             articleMessage.textContent =
-                "Saving article...";
+                "Please enter article content.";
+
+            return;
+        }
 
 
-            const id =
-                document.getElementById(
-                    "articleId"
-                ).value;
+        // ----------------------------------------------------
+        // Generate slug
+        // ----------------------------------------------------
 
+        let slug;
 
-            const title =
-                document.getElementById(
-                    "title"
-                ).value.trim();
-
-
-            const category =
-                document.getElementById(
-                    "category"
-                ).value;
-
-
-            const author =
-                document.getElementById(
-                    "author"
-                ).value.trim();
-
-
-            const excerpt =
-                document.getElementById(
-                    "excerpt"
-                ).value.trim();
-
-
-            const content =
-                document.getElementById(
-                    "content"
-                ).value.trim();
-
-
-            const featured_image =
-                document.getElementById(
-                    "featuredImage"
-                ).value.trim();
-
-
-            const status =
-                document.getElementById(
-                    "status"
-                ).value;
-
-
-            const publishedAt =
-                document.getElementById(
-                    "publishedAt"
-                ).value;
-
-
-            // ------------------------------------------------
-            // Basic validation
-            // ------------------------------------------------
-
-            if (!title) {
-
-                articleMessage.textContent =
-                    "Please enter an article title.";
-
-                return;
-
-            }
-
-
-            if (!category) {
-
-                articleMessage.textContent =
-                    "Please select a category.";
-
-                return;
-
-            }
-
-
-            if (!content) {
-
-                articleMessage.textContent =
-                    "Please enter article content.";
-
-                return;
-
-            }
-
-
-            // ------------------------------------------------
-            // Create a unique slug
-            // ------------------------------------------------
-
-            let slug;
-
+        try {
 
             if (id) {
 
-                // ------------------------------------------------
-                // Editing an existing article
-                // Keep the current slug unless the title has
-                // changed enough to create a new slug.
-                // ------------------------------------------------
-
-                const {
-                    data: existingArticle,
-                    error: existingError
-                } = await supabase
-                    .from("articles")
-                    .select("slug, title")
-                    .eq("id", id)
-                    .single();
+                const existingResult =
+                    await supabase
+                        .from("articles")
+                        .select("slug, title")
+                        .eq("id", id)
+                        .single();
 
 
-                if (existingError) {
-
-                    console.error(existingError);
-
-                    articleMessage.textContent =
-                        "Unable to retrieve existing article.";
-
-                    return;
-
+                if (existingResult.error) {
+                    throw existingResult.error;
                 }
 
 
-                const newBaseSlug =
+                const existingArticle =
+                    existingResult.data;
+
+                const baseSlug =
                     createSlug(title);
 
+
+                // Keep original slug if title has not changed
 
                 if (
                     existingArticle &&
@@ -455,210 +323,168 @@ document.addEventListener("DOMContentLoaded", async function () {
                     existingArticle.slug
                 ) {
 
-                    // Title hasn't changed.
-                    // Keep the original URL.
                     slug =
                         existingArticle.slug;
 
                 } else {
 
-                    // Title changed.
-                    // Generate a new unique slug.
                     slug =
                         await generateUniqueSlug(
-                            newBaseSlug,
+                            baseSlug,
                             id
                         );
-
                 }
 
 
             } else {
 
-                // New article
                 const baseSlug =
                     createSlug(title);
 
-
                 slug =
-                    await generateUniqueSlug(
-                        baseSlug
-                    );
+                    await generateUniqueSlug(baseSlug);
 
             }
 
+        } catch (error) {
 
-            // ------------------------------------------------
-            // Article Data
-            // ------------------------------------------------
+            console.error(error);
 
-            const articleData = {
+            articleMessage.textContent =
+                "Unable to generate article URL.";
 
-                title,
-
-                slug,
-
-                category,
-
-                author:
-                    author || null,
-
-                excerpt:
-                    excerpt || null,
-
-                content,
-
-                featured_image:
-                    featured_image || null,
-
-                status,
-
-                published_at:
-                    publishedAt
-                        ? new Date(
-                            publishedAt
-                        ).toISOString()
-
-                        : status === "published"
-
-                            ? new Date().toISOString()
-
-                            : null
-
-            };
-
-
-            // ------------------------------------------------
-            // Save
-            // ------------------------------------------------
-
-            try {
-
-                let result;
-
-
-                if (id) {
-
-                    result =
-                        await supabase
-                            .from("articles")
-                            .update(articleData)
-                            .eq("id", id);
-
-
-                } else {
-
-                    result =
-                        await supabase
-                            .from("articles")
-                            .insert([
-                                articleData
-                            ]);
-
-                }
-
-
-                if (result.error) {
-                    throw result.error;
-                }
-
-
-                articleMessage.textContent =
-                    "Article saved successfully.";
-
-
-                articleForm.reset();
-
-
-                document.getElementById(
-                    "articleId"
-                ).value = "";
-
-
-                articleEditor.style.display =
-                    "none";
-
-
-                await loadArticles();
-
-
-            } catch (error) {
-
-                console.error(error);
-
-
-                articleMessage.textContent =
-                    error.message ||
-                    "Unable to save article.";
-
-            }
-
+            return;
         }
-    );
+
+
+        // ----------------------------------------------------
+        // Article Data
+        // ----------------------------------------------------
+
+        const articleData = {
+
+            title: title,
+
+            slug: slug,
+
+            category: category,
+
+            author: author || null,
+
+            excerpt: excerpt || null,
+
+            content: content,
+
+            featured_image:
+                featuredImage || null,
+
+            status: status,
+
+            published_at:
+                publishedAt
+                    ? new Date(publishedAt).toISOString()
+                    : status === "published"
+                        ? new Date().toISOString()
+                        : null
+        };
+
+
+        // ----------------------------------------------------
+        // Save
+        // ----------------------------------------------------
+
+        try {
+
+            let result;
+
+            if (id) {
+
+                result =
+                    await supabase
+                        .from("articles")
+                        .update(articleData)
+                        .eq("id", id);
+
+            } else {
+
+                result =
+                    await supabase
+                        .from("articles")
+                        .insert([articleData]);
+
+            }
+
+
+            if (result.error) {
+                throw result.error;
+            }
+
+
+            articleMessage.textContent =
+                "Article saved successfully.";
+
+            articleForm.reset();
+
+            document.getElementById("articleId").value = "";
+
+            articleEditor.style.display = "none";
+
+            await loadArticles();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            articleMessage.textContent =
+                error.message ||
+                "Unable to save article.";
+        }
+
+    });
 
 
     // ========================================================
-    // Generate Unique Slug
+    // UNIQUE SLUG GENERATOR
     // ========================================================
 
-    async function generateUniqueSlug(
-        baseSlug,
-        excludeId = null
-    ) {
+    async function generateUniqueSlug(baseSlug, excludeId) {
 
         if (!baseSlug) {
-
-            baseSlug =
-                "article";
-
+            baseSlug = "article";
         }
 
 
-        let slug =
-            baseSlug;
+        let slug = baseSlug;
 
-        let counter =
-            1;
+        let counter = 1;
 
 
         while (true) {
 
-            let query =
-                supabase
+            const result =
+                await supabase
                     .from("articles")
                     .select("id")
                     .eq("slug", slug)
                     .limit(1);
 
 
-            const {
-                data,
-                error
-            } = await query;
-
-
-            if (error) {
-
-                console.error(
-                    "Slug check error:",
-                    error
-                );
-
-                throw error;
-
+            if (result.error) {
+                throw result.error;
             }
 
 
-            // No article with this slug
-            if (!data || data.length === 0) {
+            if (!result.data || result.data.length === 0) {
+
                 return slug;
+
             }
 
 
-            // Existing article is the same article
             if (
                 excludeId &&
-                data[0].id === excludeId
+                result.data[0].id === excludeId
             ) {
 
                 return slug;
@@ -668,17 +494,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             counter++;
 
-
             slug =
-                `${baseSlug}-${counter}`;
-
+                baseSlug + "-" + counter;
         }
 
     }
 
 
     // ========================================================
-    // Load Articles
+    // LOAD ARTICLES
     // ========================================================
 
     async function loadArticles() {
@@ -687,31 +511,28 @@ document.addEventListener("DOMContentLoaded", async function () {
             "<p>Loading articles...</p>";
 
 
-        const {
-            data,
-            error
-        } = await supabase
-            .from("articles")
-            .select("*")
-            .order(
-                "created_at",
-                {
+        const result =
+            await supabase
+                .from("articles")
+                .select("*")
+                .order("created_at", {
                     ascending: false
-                }
-            );
+                });
 
 
-        if (error) {
+        if (result.error) {
 
-            console.error(error);
-
+            console.error(result.error);
 
             articlesContainer.innerHTML =
                 "<p>Unable to load articles.</p>";
 
             return;
-
         }
+
+
+        const data =
+            result.data;
 
 
         if (!data || data.length === 0) {
@@ -720,90 +541,86 @@ document.addEventListener("DOMContentLoaded", async function () {
                 "<p>No articles created yet.</p>";
 
             return;
-
         }
 
 
         articlesContainer.innerHTML =
-            data.map(article => `
+            data.map(function (article) {
 
-                <div class="article-row">
+                return (
+                    '<div class="article-row">' +
 
-                    <div>
+                        '<div>' +
 
-                        <h3>
-                            ${escapeHtml(
-                                article.title
-                            )}
-                        </h3>
+                            '<h3>' +
+                                escapeHtml(article.title) +
+                            '</h3>' +
 
-                        <p>
+                            '<p>' +
 
-                            ${escapeHtml(
-                                article.category || ""
-                            )}
+                                escapeHtml(
+                                    article.category || ""
+                                ) +
 
-                            ·
+                                " · " +
 
-                            ${escapeHtml(
-                                article.status || ""
-                            )}
+                                escapeHtml(
+                                    article.status || ""
+                                ) +
 
-                        </p>
+                            '</p>' +
 
-                    </div>
+                        '</div>' +
 
+                        '<div class="article-actions">' +
 
-                    <div class="article-actions">
+                            '<button ' +
+                                'class="edit-button" ' +
+                                'data-id="' +
+                                    article.id +
+                                '">' +
+                                'Edit' +
+                            '</button>' +
 
-                        <button
-                            class="edit-button"
-                            data-id="${article.id}"
-                        >
-                            Edit
-                        </button>
+                            '<button ' +
+                                'class="delete-button" ' +
+                                'data-id="' +
+                                    article.id +
+                                '">' +
+                                'Delete' +
+                            '</button>' +
 
+                        '</div>' +
 
-                        <button
-                            class="delete-button"
-                            data-id="${article.id}"
-                        >
-                            Delete
-                        </button>
+                    '</div>'
+                );
 
-                    </div>
-
-                </div>
-
-            `).join("");
+            }).join("");
 
 
         // ----------------------------------------------------
-        // Edit buttons
+        // EDIT BUTTONS
         // ----------------------------------------------------
 
         document
             .querySelectorAll(".edit-button")
-            .forEach(button => {
+            .forEach(function (button) {
 
                 button.addEventListener(
                     "click",
                     function () {
 
                         const article =
-                            data.find(
-                                item =>
-                                    item.id ===
-                                    button.dataset.id
-                            );
+                            data.find(function (item) {
+
+                                return item.id ===
+                                    button.dataset.id;
+
+                            });
 
 
                         if (article) {
-
-                            editArticle(
-                                article
-                            );
-
+                            editArticle(article);
                         }
 
                     }
@@ -813,12 +630,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         // ----------------------------------------------------
-        // Delete buttons
+        // DELETE BUTTONS
         // ----------------------------------------------------
 
         document
             .querySelectorAll(".delete-button")
-            .forEach(button => {
+            .forEach(function (button) {
 
                 button.addEventListener(
                     "click",
@@ -837,103 +654,62 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================================
-    // Edit Article
+    // EDIT ARTICLE
     // ========================================================
 
     function editArticle(article) {
 
-        document.getElementById(
-            "articleId"
-        ).value =
+        document.getElementById("articleId").value =
             article.id;
 
-
-        document.getElementById(
-            "title"
-        ).value =
+        document.getElementById("title").value =
             article.title || "";
 
-
-        document.getElementById(
-            "category"
-        ).value =
+        document.getElementById("category").value =
             article.category || "";
 
-
-        document.getElementById(
-            "author"
-        ).value =
+        document.getElementById("author").value =
             article.author || "";
 
-
-        document.getElementById(
-            "excerpt"
-        ).value =
+        document.getElementById("excerpt").value =
             article.excerpt || "";
 
-
-        document.getElementById(
-            "content"
-        ).value =
+        document.getElementById("content").value =
             article.content || "";
 
-
-        document.getElementById(
-            "featuredImage"
-        ).value =
+        document.getElementById("featuredImage").value =
             article.featured_image || "";
 
-
-        document.getElementById(
-            "status"
-        ).value =
+        document.getElementById("status").value =
             article.status || "draft";
 
-
-        document.getElementById(
-            "publishedAt"
-        ).value = "";
+        document.getElementById("publishedAt").value = "";
 
 
         if (article.published_at) {
 
             const date =
-                new Date(
-                    article.published_at
-                );
-
+                new Date(article.published_at);
 
             const localDate =
                 new Date(
-                    date.getTime()
-                    -
-                    date.getTimezoneOffset()
-                    * 60000
+                    date.getTime() -
+                    date.getTimezoneOffset() * 60000
                 )
                 .toISOString()
                 .slice(0, 16);
 
-
-            document.getElementById(
-                "publishedAt"
-            ).value =
+            document.getElementById("publishedAt").value =
                 localDate;
-
         }
 
 
-        document.getElementById(
-            "editorTitle"
-        ).textContent =
+        document.getElementById("editorTitle").textContent =
             "Edit Article";
 
+        articleMessage.textContent = "";
 
-        articleMessage.textContent =
-            "";
-
-
-        articleEditor.style.display =
-            "block";
+        articleEditor.style.display = "block";
 
 
         window.scrollTo({
@@ -945,7 +721,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================================
-    // Delete Article
+    // DELETE ARTICLE
     // ========================================================
 
     async function deleteArticle(id) {
@@ -961,23 +737,21 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        const {
-            error
-        } = await supabase
-            .from("articles")
-            .delete()
-            .eq("id", id);
+        const result =
+            await supabase
+                .from("articles")
+                .delete()
+                .eq("id", id);
 
 
-        if (error) {
+        if (result.error) {
 
             alert(
-                error.message ||
+                result.error.message ||
                 "Unable to delete article."
             );
 
             return;
-
         }
 
 
@@ -987,7 +761,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================================
-    // Refresh
+    // REFRESH
     // ========================================================
 
     refreshButton.addEventListener(
@@ -997,12 +771,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================================
-    // Initial Load
+    // INITIAL LOAD
     // ========================================================
 
-    articleEditor.style.display =
-        "none";
-
+    articleEditor.style.display = "none";
 
     await loadArticles();
 
@@ -1010,7 +782,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
 // ============================================================
-// Helper Functions
+// CREATE SLUG
 // ============================================================
 
 function createSlug(text) {
@@ -1018,23 +790,20 @@ function createSlug(text) {
     return text
         .toLowerCase()
         .trim()
-        .replace(
-            /[^a-z0-9]+/g,
-            "-"
-        )
-        .replace(
-            /^-+|-+$/g,
-            "");
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
 
 }
 
 
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
 function escapeHtml(text) {
 
     const div =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     div.textContent =
         text || "";
