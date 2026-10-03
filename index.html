@@ -1397,7 +1397,22 @@ async function loadPublicArticles() {
           <div class="meta">
             ${article.author || "GFS Team"}${date ? " · " + date : ""}
           </div>
-
+<a
+    href="articles/article.html?slug=${encodeURIComponent(article.slug)}"
+    style="
+        display:inline-block;
+        margin-top:18px;
+        font-weight:600;
+        font-size:15px;
+        border-bottom:2px solid var(--orange);
+        align-self:flex-start;
+        padding-bottom:2px;
+        color:inherit;
+        text-decoration:none;
+    "
+>
+    Read Article →
+</a>
         </article>
       `;
 
