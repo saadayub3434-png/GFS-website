@@ -1325,6 +1325,95 @@ document.addEventListener("DOMContentLoaded", function() {
 
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+
+<script>
+async function loadPublicArticles() {
+
+  const container = document.getElementById("articlesContainer");
+
+  if (!container) return;
+
+  try {
+
+    const { data, error } = await window.supabaseClient
+      .from("articles")
+      .select("*")
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+
+    if (error) {
+      console.error("Articles error:", error);
+      container.innerHTML = "<p>Unable to load insights.</p>";
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = "<p>No published insights available.</p>";
+      return;
+    }
+
+    container.innerHTML = data.map(article => {
+
+      const date = article.published_at
+        ? new Date(article.published_at).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+          })
+        : "";
+
+      return `
+        <article class="article">
+
+          ${
+            article.featured_image
+              ? `<img
+                  src="${article.featured_image}"
+                  alt="${article.title}"
+                  style="width:100%;height:190px;object-fit:cover;margin:-28px -28px 24px;width:calc(100% + 56px);"
+                >`
+              : ""
+          }
+
+          <div class="cat">
+            ${article.category || "GFS Insights"}
+          </div>
+
+          <h3>${article.title}</h3>
+
+          <p>
+            ${
+              article.excerpt ||
+              (article.content
+                ? article.content.substring(0, 180) + "..."
+                : "")
+            }
+          </p>
+
+          <div class="meta">
+            ${article.author || "GFS Team"}${date ? " · " + date : ""}
+          </div>
+
+        </article>
+      `;
+
+    }).join("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      "<p>Unable to load insights.</p>";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  loadPublicArticles();
+});
+</script>
 
 </body>
 </html>
